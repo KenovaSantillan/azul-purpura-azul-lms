@@ -3,10 +3,20 @@ import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLMS } from '@/contexts/LMSContext';
-import { Users, List, User, Folder } from 'lucide-react';
+import { Users, List, User, Folder, CheckCircle } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 export function Dashboard() {
-  const { groups, users, tasks, announcements } = useLMS();
+  const { groups, users, tasks, announcements, currentUser } = useLMS();
+
+  const getInitials = (name: string) => {
+    if (!name) return "";
+    const names = name.split(' ');
+    if (names.length > 1) {
+      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
   
   const students = users.filter(u => u.role === 'student');
   const teachers = users.filter(u => u.role === 'teacher');
@@ -46,10 +56,23 @@ export function Dashboard() {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Bienvenido a Portal Kenova</p>
-      </div>
+      {/* Welcome Banner */}
+      {currentUser && (
+        <Card className="bg-gradient-to-r from-primary/10 to-card animate-fade-in">
+          <CardContent className="p-6 flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">¡Bienvenido, {currentUser.name}!</h1>
+              <p className="text-muted-foreground">Aquí tienes un resumen de tu actividad reciente.</p>
+            </div>
+            <Avatar className="h-16 w-16 border-2 border-primary">
+              <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
+              <AvatarFallback className="text-2xl bg-primary/20">
+                {getInitials(currentUser.name)}
+              </AvatarFallback>
+            </Avatar>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -70,7 +93,7 @@ export function Dashboard() {
       </div>
 
       {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Groups */}
         <Card className="animate-fade-in" style={{animationDelay: '400ms'}}>
           <CardHeader>
@@ -92,6 +115,9 @@ export function Dashboard() {
                   </Badge>
                 </div>
               ))}
+              {groups.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">No hay grupos recientes.</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -119,6 +145,41 @@ export function Dashboard() {
                   </p>
                 </div>
               ))}
+              {recentAnnouncements.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">No hay anuncios recientes.</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Pending Tasks */}
+        <Card className="animate-fade-in" style={{animationDelay: '600ms'}}>
+          <CardHeader>
+            <CardTitle>Tareas Pendientes</CardTitle>
+            <CardDescription>Tus próximas entregas</CardDescription>
+          </CardHeader>
+          <CardContent>
+             <div className="space-y-4">
+              {pendingTasks.slice(0, 3).map((task) => (
+                <div key={task.id} className="flex items-center justify-between p-3 bg-accent/50 rounded-lg">
+                  <div>
+                    <p className="font-medium">{task.title}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Vence: {new Date(task.dueDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <Badge variant="outline" className="text-orange-500 border-orange-500">
+                    Pendiente
+                  </Badge>
+                </div>
+              ))}
+              {pendingTasks.length === 0 && (
+                <div className="text-center py-4 text-muted-foreground">
+                    <CheckCircle className="mx-auto h-8 w-8 mb-2 text-green-500" />
+                    <p>¡Felicidades!</p>
+                    <p className="text-sm">No tienes tareas pendientes.</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -126,3 +187,4 @@ export function Dashboard() {
     </div>
   );
 }
+
