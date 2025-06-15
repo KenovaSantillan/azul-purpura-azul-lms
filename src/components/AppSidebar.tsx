@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Users, User, Folder, List, User as UserIcon, Circle, Settings, BookOpen } from 'lucide-react';
 import {
@@ -22,7 +21,6 @@ const menuGroups = [
     items: [
       { title: 'Dashboard', url: '#dashboard', icon: Circle },
       { title: 'Grupos', url: '#groups', icon: Users },
-      { title: 'Aula Virtual', url: '#aula-virtual', icon: Circle },
       { title: 'Estudiantes', url: '#students', icon: User },
       { title: 'Tareas', url: '#tasks', icon: List },
       { title: 'Tablón', url: '#announcements', icon: Folder },

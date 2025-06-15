@@ -104,7 +104,7 @@ const GroupChat: React.FC<GroupChatProps> = ({ groupId }) => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-200px)] bg-card rounded-lg border">
+    <div className="flex flex-col h-full bg-card rounded-lg border">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {loading ? (
           <div className="space-y-4 p-4">

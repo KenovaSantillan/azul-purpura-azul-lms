@@ -1,10 +1,11 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Group, Specialty } from '@/types/lms';
 import { useLMS } from '@/contexts/LMSContext';
-import { Users, User as UserIcon, Pencil, Archive, ArchiveRestore, Copy } from 'lucide-react';
+import { Users, User as UserIcon, Pencil, Archive, ArchiveRestore, Copy, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface GroupCardProps {
@@ -12,6 +13,7 @@ interface GroupCardProps {
     index: number;
     isSelected: boolean;
     onSelect: (id: string | null) => void;
+    onEnterClassroom: (groupId: string) => void;
 }
 
 const getSpecialtyColor = (specialty: Specialty) => {
@@ -24,7 +26,7 @@ const getSpecialtyColor = (specialty: Specialty) => {
     return colors[specialty];
 };
 
-export default function GroupCard({ group, index, isSelected, onSelect }: GroupCardProps) {
+export default function GroupCard({ group, index, isSelected, onSelect, onEnterClassroom }: GroupCardProps) {
     const { users, archiveGroup, restoreGroup, copyGroup } = useLMS();
 
     const handleEditClick = (e: React.MouseEvent) => {
@@ -50,6 +52,11 @@ export default function GroupCard({ group, index, isSelected, onSelect }: GroupC
       copyGroup(group.id);
       onSelect(null);
     }
+
+    const handleEnterClassroom = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onEnterClassroom(group.id);
+    };
 
     return (
         <Card 
@@ -98,6 +105,9 @@ export default function GroupCard({ group, index, isSelected, onSelect }: GroupC
                       <p className="text-sm"><strong>Tutor:</strong> {users.find(u => u.id === group.tutorId)?.name}</p>
                     )}
                     <div className="flex flex-col gap-2 pt-2">
+                        <Button size="sm" className="w-full" onClick={handleEnterClassroom}>
+                            <MessageSquare className="h-4 w-4 mr-2" /> Aula Virtual
+                        </Button>
                         <div className="flex gap-2">
                             <Button size="sm" variant="outline" className="flex-1" onClick={handleEditClick}>
                                 <Pencil className="h-4 w-4 mr-2" /> Editar

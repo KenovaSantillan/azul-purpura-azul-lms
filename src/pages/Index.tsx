@@ -1,4 +1,3 @@
-
 import React, { useState, Suspense, lazy } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -9,7 +8,6 @@ import { PageLoader } from '@/components/PageLoader';
 
 const Dashboard = lazy(() => import('@/components/Dashboard'));
 const GroupsManager = lazy(() => import('@/components/GroupsManager'));
-const VirtualClassroom = lazy(() => import('@/components/sections/VirtualClassroom'));
 const StudentManagement = lazy(() => import('@/components/sections/StudentManagement'));
 const TaskManagement = lazy(() => import('@/components/sections/TaskManagement'));
 const Announcements = lazy(() => import('@/components/sections/Announcements'));
@@ -28,8 +26,6 @@ const Index = () => {
         return <Dashboard />;
       case 'groups':
         return <GroupsManager />;
-      case 'aula-virtual':
-        return <VirtualClassroom />;
       case 'students':
         return <StudentManagement />;
       case 'tasks':
