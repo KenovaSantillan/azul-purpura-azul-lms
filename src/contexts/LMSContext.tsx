@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Group, User, Task, Announcement, StudentProgress, Team, TaskSubmission } from '@/types/lms';
+import { Group, User, Task, Announcement, StudentProgress, Team, TaskSubmission, UserRole } from '@/types/lms';
 import { useAuth } from './AuthContext';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
