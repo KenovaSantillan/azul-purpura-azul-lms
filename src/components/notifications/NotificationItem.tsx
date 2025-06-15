@@ -4,17 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Info, AlertTriangle, CheckCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  timestamp: Date;
-  read: boolean;
-  actionUrl?: string;
-  persistent?: boolean;
-}
+import { Notification } from '@/types/notifications';
 
 interface NotificationItemProps {
   notification: Notification;
