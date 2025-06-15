@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { User, UserRole } from '@/types/lms';
 import { toast } from 'sonner';
@@ -96,7 +97,7 @@ export function useUserActions() {
             
             return { previousUsers };
         },
-        onError: (err, variables, context: any) => {
+        onError: (err, variables, context?: { previousUsers?: User[] }) => {
             if (context?.previousUsers) {
                 queryClient.setQueryData(['allUsers'], context.previousUsers);
             }

@@ -17,13 +17,8 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const userData = useUserData();
 
-  const value = {
-    ...userData,
-    loadingUsers: (userData as any).loadingUsers || false,
-  }
-
   return (
-    <UserContext.Provider value={value}>
+    <UserContext.Provider value={userData}>
       {children}
     </UserContext.Provider>
   );
