@@ -58,7 +58,7 @@ const NotificationCenter = () => {
         title: 'Nuevo anuncio',
         message: announcement.title,
         type: announcement.priority === 'high' ? 'error' : 'info',
-        timestamp: new Date(announcement.created_at || ''),
+        timestamp: new Date(announcement.createdAt || ''),
         read: false,
       });
     });
