@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -21,16 +21,29 @@ interface GroupFormProps {
 }
 
 export default function GroupForm({ newGroup, setNewGroup, teachers, tutors }: GroupFormProps) {
+  useEffect(() => {
+    const { grade, letter, specialty } = newGroup;
+    if (grade && letter && specialty) {
+      const formattedGrade = grade.replace('o', '°');
+      const formattedSpecialty = specialty.toUpperCase();
+      const name = `${formattedGrade}${letter} ${formattedSpecialty}`;
+      if (name !== newGroup.name) {
+        setNewGroup(prev => ({ ...prev, name }));
+      }
+    }
+  }, [newGroup.grade, newGroup.letter, newGroup.specialty, newGroup.name, setNewGroup]);
+
   return (
     <div className="grid gap-4 py-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="name">Nombre del Grupo</Label>
+          <Label htmlFor="name">Nombre del Grupo (Autogenerado)</Label>
           <Input
             id="name"
             value={newGroup.name}
-            onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
-            placeholder="Ej: 1° A - Programación"
+            disabled
+            placeholder="Se generará automáticamente"
+            className="font-semibold"
           />
         </div>
         <div>

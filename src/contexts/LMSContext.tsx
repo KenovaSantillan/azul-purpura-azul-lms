@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Group, User, Task, Announcement, StudentProgress, Team, TaskSubmission, UserRole } from '@/types/lms';
 import { useAuth } from './AuthContext';
@@ -14,13 +15,14 @@ interface LMSContextType {
   taskSubmissions: TaskSubmission[];
   currentUser: User | null;
   loadingCurrentUser: boolean;
-  addGroup: (group: Omit<Group, 'id' | 'createdAt'>) => void;
+  addGroup: (group: Omit<Group, 'id' | 'createdAt'>) => Group;
   updateGroup: (id: string, group: Partial<Group>) => void;
   archiveGroup: (id: string) => void;
   restoreGroup: (id: string) => void;
   copyGroup: (id: string) => void;
   deleteGroup: (id: string) => void;
   addUser: (user: Omit<User, 'id'>) => void;
+  bulkAddUsers: (users: User[]) => void;
   updateUser: (id: string, user: Partial<User>) => void;
   deleteUser: (id: string) => void;
   addTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
@@ -242,13 +244,15 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
     setTaskSubmissions([]);
   }, [currentUser]);
 
-  const addGroup = (group: Omit<Group, 'id' | 'createdAt'>) => {
+  const addGroup = (group: Omit<Group, 'id' | 'createdAt'>): Group => {
     const newGroup: Group = {
       ...group,
       id: Date.now().toString(),
       createdAt: new Date(),
     };
     setGroups(prev => [...prev, newGroup]);
+    toast.success(`Grupo "${newGroup.name}" creado.`);
+    return newGroup;
   };
 
   const updateGroup = (id: string, group: Partial<Group>) => {
@@ -292,6 +296,14 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
       id: Date.now().toString(),
     };
     setUsers(prev => [...prev, newUser]);
+  };
+
+  const bulkAddUsers = (newUsers: User[]) => {
+    setUsers(prev => {
+        const existingIds = new Set(prev.map(u => u.id));
+        const trulyNewUsers = newUsers.filter(u => !existingIds.has(u.id));
+        return [...prev, ...trulyNewUsers];
+    });
   };
 
   const updateUser = async (id: string, user: Partial<User>) => {
@@ -476,6 +488,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
       copyGroup,
       deleteGroup,
       addUser,
+      bulkAddUsers,
       updateUser,
       deleteUser,
       addTask,
