@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { FileUp, Mail } from 'lucide-react';
+import { FileUp, Mail, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Cell, Tooltip } from "recharts";
 import { ChartContainer, ChartConfig } from "@/components/ui/chart";
@@ -11,6 +11,7 @@ import { User } from '@/types/lms';
 import { AlertTutorDialog } from './AlertTutorDialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
+import { AlertParentDialog } from './AlertParentDialog';
 
 const chartConfig = {
   ponderacion: {
@@ -21,6 +22,7 @@ const chartConfig = {
 const StudentManagement = () => {
   const { groups, users } = useLMS();
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
+  const [isParentAlertDialogOpen, setIsParentAlertDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<User | null>(null);
 
   // NOTA: Para este ejemplo, usamos el primer grupo. En una aplicación real, se necesitaría un selector de grupo.
@@ -35,6 +37,11 @@ const StudentManagement = () => {
     }
     setSelectedStudent(student);
     setIsAlertDialogOpen(true);
+  };
+
+  const handleParentAlertClick = (student: User) => {
+    setSelectedStudent(student);
+    setIsParentAlertDialogOpen(true);
   };
 
   const studentDataForChart = students.map(student => ({
@@ -91,10 +98,16 @@ const StudentManagement = () => {
                     <TableCell>{student.email}</TableCell>
                     <TableCell>{student.role}</TableCell>
                     <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={() => handleAlertClick(student)}>
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="icon" onClick={() => handleAlertClick(student)} title="Alertar al Tutor">
                             <Mail className="h-4 w-4" />
-                            <span className="sr-only">Enviar Alerta</span>
+                            <span className="sr-only">Enviar Alerta al Tutor</span>
                         </Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleParentAlertClick(student)} title="Enviar comunicado a Padres">
+                            <Users className="h-4 w-4" />
+                            <span className="sr-only">Enviar comunicado a Padres</span>
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -157,6 +170,15 @@ const StudentManagement = () => {
             student={selectedStudent}
             group={currentGroup}
             tutor={tutor}
+        />
+      )}
+
+      {selectedStudent && currentGroup && (
+        <AlertParentDialog
+            open={isParentAlertDialogOpen}
+            onOpenChange={setIsParentAlertDialogOpen}
+            student={selectedStudent}
+            group={currentGroup}
         />
       )}
     </div>
