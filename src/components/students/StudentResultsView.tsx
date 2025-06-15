@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -115,4 +114,4 @@ const StudentResultsView = ({ student, group, onBack }: StudentResultsViewProps)
   );
 };
 
-export default StudentResultsView;
+export default React.memo(StudentResultsView);

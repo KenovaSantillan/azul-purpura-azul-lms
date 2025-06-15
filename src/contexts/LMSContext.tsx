@@ -1,10 +1,10 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Group, User, Task, Announcement, StudentProgress, Team, TaskSubmission, UserRole } from '@/types/lms';
 import { useAuth } from './AuthContext';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { User as AuthUser, RealtimeChannel } from '@supabase/supabase-js';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface LMSContextType {
   groups: Group[];
@@ -23,7 +23,7 @@ interface LMSContextType {
   deleteGroup: (id: string) => void;
   addUser: (user: Omit<User, 'id'>) => void;
   bulkAddUsers: (users: User[]) => void;
-  updateUser: (id: string, user: Partial<User>) => void;
+  updateUser: (id: string, user: Partial<User>) => Promise<void>;
   deleteUser: (id: string) => void;
   addTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
   updateTask: (id: string, task: Partial<Task>) => void;
@@ -64,23 +64,24 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
   const [taskSubmissions, setTaskSubmissions] = useState<TaskSubmission[]>([]);
   
   const { user: authUser } = useAuth();
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loadingCurrentUser, setLoadingCurrentUser] = useState(true);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchUserProfile = async (user: AuthUser) => {
-      setLoadingCurrentUser(true);
+  const { data: currentUser, isLoading: loadingCurrentUser } = useQuery({
+    queryKey: ['currentUserProfile', authUser?.id],
+    queryFn: async () => {
+      if (!authUser) return null;
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', user.id)
+        .eq('id', authUser.id)
         .single();
 
-      if (error && error.code !== 'PGRST116') { // Ignore "0 rows" error which can happen temporarily
+      if (error && error.code !== 'PGRST116') {
         toast.error("No se pudo cargar el perfil del usuario.");
         console.error("Error fetching profile:", error);
-        setCurrentUser(null);
-      } else if (profile) {
+        return null;
+      }
+      if (profile) {
         const userWithStatus: User = {
           id: profile.id,
           name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
@@ -89,81 +90,46 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
           avatar: profile.avatar_url,
           status: profile.status,
         };
-        setCurrentUser(userWithStatus);
+        return userWithStatus;
       }
-      setLoadingCurrentUser(false);
-    };
+      return null;
+    },
+    enabled: !!authUser,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
+  useEffect(() => {
     let channel: RealtimeChannel | undefined;
-
     if (authUser) {
-      fetchUserProfile(authUser);
-      
       channel = supabase.channel(`profile-changes-for-${authUser.id}`)
         .on(
           'postgres_changes',
           { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${authUser.id}` },
           (payload) => {
             console.log('User profile updated via realtime:', payload);
-            const newProfile = payload.new as {
-              id: string;
-              first_name: string | null;
-              last_name: string | null;
-              email: string | null;
-              role: UserRole;
-              avatar_url: string | null;
-              status: 'pending' | 'active' | 'inactive';
-            };
-            
-            const updatedUser: User = {
-              id: newProfile.id,
-              name: `${newProfile.first_name || ''} ${newProfile.last_name || ''}`.trim(),
-              email: newProfile.email!,
-              role: newProfile.role,
-              avatar: newProfile.avatar_url,
-              status: newProfile.status,
-            };
-
-            setCurrentUser(prevCurrentUser => {
-                if (JSON.stringify(prevCurrentUser) !== JSON.stringify(updatedUser)) {
-                    toast.info('Tu perfil ha sido actualizado.');
-                }
-                return updatedUser;
-            });
+            toast.info('Tu perfil ha sido actualizado.');
+            queryClient.invalidateQueries({ queryKey: ['currentUserProfile', authUser.id] });
           }
         )
         .subscribe();
-
-    } else {
-      setCurrentUser(null);
-      setLoadingCurrentUser(false);
     }
-    
     return () => {
       if (channel) {
         supabase.removeChannel(channel);
       }
     };
-  }, [authUser]);
+  }, [authUser, queryClient]);
 
-  // Initialize with data
-  useEffect(() => {
-    const sampleUsers: User[] = [
-      { id: '1', name: 'Prof. María González', email: 'maria@escuela.edu', role: 'teacher', status: 'active' },
-      { id: '2', name: 'Juan Pérez', email: 'juan@estudiante.edu', role: 'student', status: 'active' },
-      { id: '3', name: 'Ana Martínez', email: 'ana@estudiante.edu', role: 'student', status: 'active' },
-      { id: '4', name: 'Carlos López', email: 'carlos@estudiante.edu', role: 'student', status: 'inactive' },
-      { id: '5', name: 'Tutor Rodríguez', email: 'tutor@escuela.edu', role: 'tutor', status: 'active' },
-    ];
-    
-    const fetchAllUsers = async () => {
+  const { data: allUsersFromQuery } = useQuery({
+    queryKey: ['allUsers'],
+    queryFn: async (): Promise<User[]> => {
       const { data, error } = await supabase.from('profiles').select('*');
       if (error) {
         toast.error('No se pudieron cargar los usuarios.');
         console.error('Error fetching users:', error);
-        setUsers(sampleUsers); // fallback to sample
+        return [];
       } else {
-        const allUsers: User[] = data.map(profile => ({
+        return data.map(profile => ({
           id: profile.id,
           name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
           email: profile.email!,
@@ -171,15 +137,26 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
           avatar: profile.avatar_url,
           status: profile.status,
         }));
-        setUsers(allUsers);
       }
-    };
+    },
+    enabled: !!currentUser && currentUser.role === 'admin',
+  });
 
-    if (currentUser?.role === 'admin') {
-      fetchAllUsers();
-    } else {
-      setUsers(sampleUsers);
+  // Initialize with data
+  useEffect(() => {
+    const sampleUsers: User[] = [
+      { id: '1', name: 'Prof. María González', email: 'maria@escuela.edu', role: 'teacher', status: 'active' },
+      { id: '2', name: 'Juan Pérez', email: 'juan@estudiante.edu', role: 'student', status: 'active' },
+      { id: '3', name: 'Ana Martínez', email: 'ana@estudiante.edu', role: 'student', status: 'active' },
+      { id: '4', name: 'Carlos López', email: 'carlos@estudiante.edu', role: 'student', 'status': 'inactive' },
+      { id: '5', name: 'Tutor Rodríguez', email: 'tutor@escuela.edu', role: 'tutor', status: 'active' },
+    ];
+    
+    let usersForSetup: User[] = sampleUsers;
+    if (currentUser?.role === 'admin' && allUsersFromQuery) {
+        usersForSetup = allUsersFromQuery;
     }
+    setUsers(usersForSetup);
     
     const sampleGroups: Group[] = [
       {
@@ -191,7 +168,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
         shift: 'Matutino',
         teacherId: '1',
         tutorId: '5',
-        students: sampleUsers.filter(u => u.role === 'student'),
+        students: usersForSetup.filter(u => u.role === 'student'),
         createdAt: new Date(),
         status: 'active',
       }
@@ -204,7 +181,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
         description: 'Crear una página web completa usando HTML y CSS',
         type: 'collective',
         groupId: '1',
-        assignedTo: ['2', '3', '4'],
+        assignedTo: usersForSetup.filter(u => u.role === 'student').map(s => s.id),
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         status: 'pending',
         createdBy: '1',
@@ -242,7 +219,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
     setTasks(sampleTasks);
     setAnnouncements(sampleAnnouncements);
     setTaskSubmissions([]);
-  }, [currentUser]);
+  }, [currentUser, allUsersFromQuery]);
 
   const addGroup = (group: Omit<Group, 'id' | 'createdAt'>): Group => {
     const newGroup: Group = {
@@ -306,34 +283,60 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const updateUser = async (id: string, user: Partial<User>) => {
-    // optimistic update
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, ...user } : u));
+  const userMutation = useMutation({
+    mutationFn: async ({ id, user }: { id: string, user: Partial<User> }) => {
+      const updatePayload: { status?: 'pending' | 'active' | 'inactive', role?: UserRole } = {};
+      if (user.status) {
+        updatePayload.status = user.status;
+      }
+      if (user.role) {
+        updatePayload.role = user.role;
+      }
 
-    const updatePayload: { status?: 'pending' | 'active' | 'inactive', role?: UserRole } = {};
-    if (user.status) {
-      updatePayload.status = user.status;
-    }
-    if (user.role) {
-      updatePayload.role = user.role;
-    }
+      if (Object.keys(updatePayload).length === 0) {
+        console.warn("updateUser called without any fields to update.");
+        return;
+      }
 
-    if (Object.keys(updatePayload).length === 0) {
-      console.warn("updateUser called without any fields to update.");
-      return;
-    }
+      const { error } = await supabase
+        .from('profiles')
+        .update(updatePayload)
+        .eq('id', id);
 
-    const { error } = await supabase
-      .from('profiles')
-      .update(updatePayload)
-      .eq('id', id);
+      if (error) {
+        throw new Error('Error al actualizar el usuario.');
+      }
+    },
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ['allUsers'] });
+      const previousUsers = queryClient.getQueryData<User[]>(['allUsers']);
+      
+      const optimisticUpdate = (old?: User[]) => old?.map(u => u.id === variables.id ? { ...u, ...variables.user } : u);
 
-    if (error) {
+      queryClient.setQueryData<User[]>(['allUsers'], optimisticUpdate);
+      setUsers(prev => optimisticUpdate(prev) || []);
+      
+      return { previousUsers };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousUsers) {
+        queryClient.setQueryData(['allUsers'], context.previousUsers);
+        setUsers(context.previousUsers);
+      }
       toast.error('Error al actualizar el usuario.');
-      console.error('Error updating user:', error);
-    } else {
+      console.error('Error updating user:', err);
+    },
+    onSuccess: () => {
       toast.success('Usuario actualizado correctamente.');
-    }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+    },
+  });
+
+  const updateUser = async (id: string, user: Partial<User>) => {
+    await userMutation.mutateAsync({ id, user });
   };
 
   const deleteUser = (id: string) => {
@@ -479,7 +482,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
       announcements,
       teams,
       taskSubmissions,
-      currentUser,
+      currentUser: currentUser ?? null,
       loadingCurrentUser,
       addGroup,
       updateGroup,

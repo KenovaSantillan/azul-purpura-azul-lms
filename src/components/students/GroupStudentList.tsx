@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -131,5 +130,4 @@ const GroupStudentList = ({ group, onStudentSelect }: GroupStudentListProps) => 
   );
 };
 
-export default GroupStudentList;
-
+export default React.memo(GroupStudentList);
