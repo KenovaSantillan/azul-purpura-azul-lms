@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -6,7 +5,8 @@ import { Dashboard } from '@/components/Dashboard';
 import { GroupsManager } from '@/components/GroupsManager';
 import { ThemeCustomizer } from '@/components/ThemeCustomizer';
 import { Button } from '@/components/ui/button';
-import { Circle, Mic } from 'lucide-react';
+import { Circle, Brain } from 'lucide-react';
+import { UserNav } from '@/components/UserNav';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -116,11 +116,12 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Sistema de Gestión Educativa</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <ThemeCustomizer />
-              <Button variant="ghost" size="icon" onClick={() => alert('Control por voz próximamente')}>
-                <Mic className="h-5 w-5" />
+              <Button variant="ghost" size="icon" onClick={() => alert('Asistente de IA próximamente')}>
+                <Brain className="h-5 w-5" />
               </Button>
+              <UserNav />
             </div>
           </header>
           

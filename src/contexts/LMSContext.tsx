@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Group, User, Task, Announcement, StudentProgress, Team, UserRole } from '@/types/lms';
 import { useAuth } from './AuthContext';
@@ -46,6 +45,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
         name: authUser.user_metadata.name ?? authUser.email!,
         email: authUser.email!,
         role: authUser.user_metadata.role ?? 'student',
+        avatar: authUser.user_metadata.avatar_url,
       });
     } else {
       setCurrentUser(null);
