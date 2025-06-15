@@ -94,3 +94,15 @@ export interface TaskSubmission {
   teacherFeedback?: string;
   createdAt: Date;
 }
+
+export interface GroupChatMessage {
+  id: string;
+  group_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+  profiles: {
+    name: string | null;
+    avatar_url: string | null;
+  } | null;
+}

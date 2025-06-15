@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Group, User, Task, Announcement, StudentProgress, Team, UserRole, TaskSubmission } from '@/types/lms';
 import { useAuth } from './AuthContext';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface LMSContextType {
   groups: Group[];
@@ -33,6 +34,7 @@ interface LMSContextType {
   getStudentProgress: (studentId: string, groupId: string) => StudentProgress | null;
   addTaskSubmission: (submission: Omit<TaskSubmission, 'id' | 'createdAt' | 'submittedAt' | 'submissionHash'>) => void;
   updateTaskSubmission: (id: string, submission: Partial<TaskSubmission>) => void;
+  sendGroupChatMessage: (groupId: string, content: string) => Promise<void>;
 }
 
 const LMSContext = createContext<LMSContextType | undefined>(undefined);
@@ -272,6 +274,25 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
     setTeams(prev => prev.map(t => t.id === id ? { ...t, ...team } : t));
   };
 
+  const sendGroupChatMessage = async (groupId: string, content: string) => {
+    if (!currentUser) {
+      toast.error("Debes iniciar sesión para enviar mensajes.");
+      throw new Error("User not authenticated");
+    }
+
+    const { error } = await supabase.from('group_chat_messages').insert({
+      group_id: groupId,
+      user_id: currentUser.id,
+      content: content,
+    });
+
+    if (error) {
+      toast.error("Error al enviar el mensaje.");
+      console.error("Error sending message:", error);
+      throw error;
+    }
+  };
+
   const addTaskSubmission = (submission: Omit<TaskSubmission, 'id' | 'createdAt' | 'submittedAt' | 'submissionHash'>) => {
     const submissionHash = submission.content ? simpleHash(submission.content) : undefined;
     
@@ -352,6 +373,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
       getStudentProgress,
       addTaskSubmission,
       updateTaskSubmission,
+      sendGroupChatMessage,
     }}>
       {children}
     </LMSContext.Provider>
