@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -19,16 +19,19 @@ const StudentResultsView = ({ student, group, onBack }: StudentResultsViewProps)
   
   const progress = getStudentProgress(student.id, group.id);
 
-  const studentSubmissions = taskSubmissions.filter(
-    sub => sub.studentId === student.id && typeof sub.total_score === 'number'
+  const studentSubmissions = useMemo(() => 
+    taskSubmissions.filter(sub => sub.studentId === student.id && typeof sub.total_score === 'number'),
+    [taskSubmissions, student.id]
   );
 
-  const averageGrade =
+  const averageGrade = useMemo(() =>
     studentSubmissions.length > 0
       ? Math.round(studentSubmissions.reduce((acc, sub) => acc + (sub.total_score ?? 0), 0) / studentSubmissions.length)
-      : 0;
+      : 0,
+    [studentSubmissions]
+  );
 
-  const recentGrades = studentSubmissions
+  const recentGrades = useMemo(() => studentSubmissions
     .map(sub => {
       const task = tasks.find(t => t.id === sub.taskId);
       return {
@@ -38,11 +41,15 @@ const StudentResultsView = ({ student, group, onBack }: StudentResultsViewProps)
       };
     })
     .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
-    .slice(0, 3);
+    .slice(0, 3),
+    [studentSubmissions, tasks]
+  );
   
-  const completionPercentage = progress && progress.totalTasks > 0
+  const completionPercentage = useMemo(() => progress && progress.totalTasks > 0
     ? Math.round((progress.completedTasks / progress.totalTasks) * 100)
-    : 0;
+    : 0,
+    [progress]
+  );
 
   return (
     <div className="p-6 animate-fade-in space-y-6">

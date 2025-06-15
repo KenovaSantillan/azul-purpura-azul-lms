@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useMemo } from 'react';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -24,7 +25,7 @@ const GroupStudentList = ({ group, onStudentSelect }: GroupStudentListProps) => 
   const [selectedStudentForAlert, setSelectedStudentForAlert] = useState<User | null>(null);
 
   const students = group.students || [];
-  const tutor = users.find(u => u.id === group.tutorId);
+  const tutor = useMemo(() => users.find(u => u.id === group.tutorId), [users, group.tutorId]);
 
   const handleAlertClick = (student: User) => {
     if (!tutor) {
