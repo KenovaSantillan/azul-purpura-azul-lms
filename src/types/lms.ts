@@ -42,6 +42,7 @@ export interface Task {
   createdAt: Date;
   max_score?: number;
   allow_late_submissions?: boolean;
+  rubric?: string;
 }
 
 export interface Announcement {

@@ -259,6 +259,7 @@ export type Database = {
           group_id: string
           id: string
           max_score: number | null
+          rubric: string | null
           status: Database["public"]["Enums"]["task_status"]
           title: string
           type: Database["public"]["Enums"]["task_type"]
@@ -272,6 +273,7 @@ export type Database = {
           group_id: string
           id?: string
           max_score?: number | null
+          rubric?: string | null
           status?: Database["public"]["Enums"]["task_status"]
           title: string
           type: Database["public"]["Enums"]["task_type"]
@@ -285,6 +287,7 @@ export type Database = {
           group_id?: string
           id?: string
           max_score?: number | null
+          rubric?: string | null
           status?: Database["public"]["Enums"]["task_status"]
           title?: string
           type?: Database["public"]["Enums"]["task_type"]

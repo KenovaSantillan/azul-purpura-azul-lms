@@ -107,6 +107,12 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
         createdAt: new Date(),
         max_score: 100,
         allow_late_submissions: true,
+        rubric: `
+          - **Estructura HTML (30%)**: Uso correcto de etiquetas semánticas (header, footer, nav, section, article).
+          - **Estilos CSS (40%)**: Diseño visualmente atractivo, uso de Flexbox o Grid, consistencia en colores y fuentes.
+          - **Responsividad (20%)**: La página se adapta correctamente a tamaños de pantalla de escritorio y móvil.
+          - **Creatividad y Originalidad (10%)**: El diseño es único y creativo.
+        `.trim(),
       }
     ];
 
