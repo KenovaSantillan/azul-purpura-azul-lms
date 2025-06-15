@@ -1,5 +1,4 @@
 
-```typescript
 import React from 'react';
 import { useLMS } from '@/contexts/LMSContext';
 import { useUser } from '@/contexts/UserContext';
@@ -57,4 +56,3 @@ const Library = () => {
 };
 
 export default Library;
-```

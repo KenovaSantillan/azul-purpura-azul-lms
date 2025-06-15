@@ -1,5 +1,4 @@
 
-```typescript
 import React, { createContext, useContext } from 'react';
 import { Resource } from '@/types/lms';
 import { useFetchResources } from '@/hooks/useFetchResources';
@@ -46,4 +45,3 @@ export function useLMSResources() {
     }
     return context;
 }
-```

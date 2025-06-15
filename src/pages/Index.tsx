@@ -1,5 +1,4 @@
 
-```typescript
 import React, { useState, Suspense, lazy } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -85,4 +84,3 @@ const Index = () => {
 };
 
 export default Index;
-```

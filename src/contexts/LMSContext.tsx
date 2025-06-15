@@ -1,5 +1,4 @@
 
-```typescript
 import React, { createContext, useContext } from 'react';
 import { Group, Task, Announcement, StudentProgress, Team, TaskSubmission, Resource } from '@/types/lms';
 import { GroupProvider, useGroups, GroupContextType } from './GroupContext';
@@ -64,4 +63,3 @@ export function useLMS() {
   }
   return context;
 }
-```

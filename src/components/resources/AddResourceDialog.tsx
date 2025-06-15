@@ -1,5 +1,4 @@
 
-```typescript
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -131,4 +130,3 @@ const AddResourceDialog = ({ children }: AddResourceDialogProps) => {
 };
 
 export default AddResourceDialog;
-```
