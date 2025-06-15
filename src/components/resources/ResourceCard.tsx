@@ -3,12 +3,13 @@ import React from 'react';
 import { Resource } from '@/types/lms';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Link, File, Trash2, User, Calendar, Download } from 'lucide-react';
+import { Link, File, Trash2, User, Calendar, Download, Edit } from 'lucide-react';
 import { useUser } from '@/contexts/UserContext';
 import { useLMS } from '@/contexts/LMSContext';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import EditResourceDialog from './EditResourceDialog';
 
 const SUPABASE_URL = "https://nezvfjxihrwuhkbufxkg.supabase.co";
 
@@ -56,27 +57,34 @@ const ResourceCard = ({ resource }: { resource: Resource }) => {
                 </Button>
 
                 {canDelete && (
-                     <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 hover:text-destructive">
-                                <Trash2 className="h-4 w-4" />
+                    <div className="flex items-center">
+                        <EditResourceDialog resource={resource}>
+                            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+                                <Edit className="h-4 w-4" />
                             </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    Esta acción no se puede deshacer. Esto eliminará permanentemente el recurso.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => deleteResource(resource)} disabled={isDeleting}>
-                                    {isDeleting ? 'Eliminando...' : 'Eliminar'}
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                        </EditResourceDialog>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 hover:text-destructive">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Esta acción no se puede deshacer. Esto eliminará permanentemente el recurso.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => deleteResource(resource)} disabled={isDeleting}>
+                                        {isDeleting ? 'Eliminando...' : 'Eliminar'}
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
                 )}
             </CardFooter>
         </Card>

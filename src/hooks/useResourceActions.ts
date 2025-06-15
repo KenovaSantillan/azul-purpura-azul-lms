@@ -1,10 +1,10 @@
-
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Resource } from '@/types/lms';
 import { toast } from 'sonner';
 
 export type ResourceInput = Omit<Resource, 'id' | 'created_at' | 'updated_at' | 'uploaded_by' | 'profiles'> & { uploaded_by?: string };
+export type ResourceUpdateInput = Partial<ResourceInput>;
 
 const uploadResourceFile = async (file: File) => {
     const filePath = `${Date.now()}-${file.name}`;
@@ -56,6 +56,57 @@ export const useResourceActions = () => {
         }
     });
 
+    const updateResourceMutation = useMutation({
+        mutationFn: async ({ resourceId, resource, file }: { resourceId: string, resource: ResourceUpdateInput, file?: File }) => {
+            const resourceToUpdate: ResourceUpdateInput = { ...resource };
+
+            const { data: oldResource, error: fetchError } = await supabase
+                .from('resources')
+                .select('content, type')
+                .eq('id', resourceId)
+                .single();
+
+            if (fetchError) {
+                console.error("Error fetching old resource:", fetchError);
+                throw new Error("No se pudo encontrar el recurso a actualizar.");
+            }
+
+            if (resource.type === 'file' && file) {
+                const { filePath } = await uploadResourceFile(file);
+                resourceToUpdate.content = filePath;
+                resourceToUpdate.file_name = file.name;
+                resourceToUpdate.file_type = file.type;
+
+                if (oldResource?.type === 'file' && oldResource.content) {
+                    await supabase.storage.from('resource_files').remove([oldResource.content]);
+                }
+            } else if (resource.type === 'link' && oldResource?.type === 'file' && oldResource.content) {
+                await supabase.storage.from('resource_files').remove([oldResource.content]);
+                resourceToUpdate.file_name = null;
+                resourceToUpdate.file_type = null;
+            }
+
+            const { data, error } = await supabase
+                .from('resources')
+                .update(resourceToUpdate)
+                .eq('id', resourceId)
+                .select()
+                .single();
+
+            if (error) {
+                console.error("Error updating resource:", error);
+                throw error;
+            }
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['resources'] });
+        },
+        onError: (error: Error) => {
+            toast.error(`Error al actualizar el recurso: ${error.message}`);
+        }
+    });
+
     const deleteResourceMutation = useMutation({
         mutationFn: async (resource: Resource) => {
             if (resource.type === 'file' && resource.content) {
@@ -86,8 +137,10 @@ export const useResourceActions = () => {
 
     return {
         addResource: addResourceMutation.mutate,
+        updateResource: updateResourceMutation.mutate,
         deleteResource: deleteResourceMutation.mutate,
         isAdding: addResourceMutation.isPending,
+        isUpdating: updateResourceMutation.isPending,
         isDeleting: deleteResourceMutation.isPending,
     };
 };
