@@ -257,7 +257,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
         studentId: studentJuan.id,
         submittedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-        grade: 90
+        total_score: 90
       });
       sampleSubmissions.push({
         id: 'sub2',
@@ -265,7 +265,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
         studentId: studentJuan.id,
         submittedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
         createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-        grade: 85
+        total_score: 85
       });
       sampleSubmissions.push({
         id: 'sub3',
@@ -273,7 +273,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
         studentId: studentJuan.id,
         submittedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
         createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
-        grade: 92
+        total_score: 92
       });
     }
 

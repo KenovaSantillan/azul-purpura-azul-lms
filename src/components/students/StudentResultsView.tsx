@@ -20,12 +20,12 @@ const StudentResultsView = ({ student, group, onBack }: StudentResultsViewProps)
   const progress = getStudentProgress(student.id, group.id);
 
   const studentSubmissions = taskSubmissions.filter(
-    sub => sub.studentId === student.id && typeof sub.grade === 'number'
+    sub => sub.studentId === student.id && typeof sub.total_score === 'number'
   );
 
   const averageGrade =
     studentSubmissions.length > 0
-      ? Math.round(studentSubmissions.reduce((acc, sub) => acc + (sub.grade ?? 0), 0) / studentSubmissions.length)
+      ? Math.round(studentSubmissions.reduce((acc, sub) => acc + (sub.total_score ?? 0), 0) / studentSubmissions.length)
       : 0;
 
   const recentGrades = studentSubmissions
@@ -33,7 +33,7 @@ const StudentResultsView = ({ student, group, onBack }: StudentResultsViewProps)
       const task = tasks.find(t => t.id === sub.taskId);
       return {
         task: task?.title ?? 'Tarea desconocida',
-        grade: sub.grade!,
+        grade: sub.total_score!,
         submittedAt: sub.submittedAt,
       };
     })
