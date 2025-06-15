@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,7 +5,7 @@ import { useLMS } from '@/contexts/LMSContext';
 import { Users, List, User, Folder, CheckCircle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
-export function Dashboard() {
+export default function Dashboard() {
   const { groups, users, tasks, announcements, currentUser } = useLMS();
 
   const getInitials = (name: string) => {
@@ -187,4 +186,3 @@ export function Dashboard() {
     </div>
   );
 }
-

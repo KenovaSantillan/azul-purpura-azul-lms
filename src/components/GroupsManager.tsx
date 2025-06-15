@@ -11,7 +11,7 @@ import { Grade, Letter, Specialty, Shift } from '@/types/lms';
 import { Users, User, Circle } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
-export function GroupsManager() {
+export default function GroupsManager() {
   const { groups, users, addGroup, updateGroup, deleteGroup } = useLMS();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
