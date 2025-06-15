@@ -1,6 +1,6 @@
 
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
 export const useOptimizedCache = () => {
@@ -8,10 +8,15 @@ export const useOptimizedCache = () => {
   const location = useLocation();
 
   const prefetchData = useCallback(async (queryKey: string[], queryFn: () => Promise<any>) => {
+    // Check if data already exists in cache
+    const existingData = queryClient.getQueryData(queryKey);
+    if (existingData) return;
+
     await queryClient.prefetchQuery({
       queryKey,
       queryFn,
       staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes garbage collection
     });
   }, [queryClient]);
 
@@ -43,35 +48,38 @@ export const useOptimizedCache = () => {
     };
   }, [queryClient]);
 
+  // Memoize route-based prefetch logic
+  const prefetchRoutes = useMemo(() => ({
+    auth: [],
+    dashboard: ['groups', 'tasks', 'announcements'],
+    groups: ['users'],
+    tasks: ['users', 'groups'],
+    announcements: ['groups'],
+  }), []);
+
   // Auto-prefetch related data based on current route
   useEffect(() => {
     const prefetchRelatedData = async () => {
       const path = location.pathname;
       
+      // Extract route name
+      const routeName = path.split('/')[1] || 'dashboard';
+      const routesToPrefetch = prefetchRoutes[routeName as keyof typeof prefetchRoutes] || [];
+
       // Prefetch user data on any authenticated route
       if (path !== '/auth') {
-        prefetchData(['currentUserProfile'], async () => {
-          // This will be handled by the existing query
-          return null;
-        });
+        prefetchData(['currentUserProfile'], async () => null);
       }
 
-      // Route-specific prefetching
-      if (path === '/' || path.includes('dashboard')) {
-        // Prefetch groups and tasks for dashboard
-        prefetchData(['groups'], async () => null);
-        prefetchData(['tasks'], async () => null);
-        prefetchData(['announcements'], async () => null);
-      }
-
-      if (path.includes('groups')) {
-        prefetchData(['users'], async () => null);
-      }
+      // Route-specific prefetching with debouncing
+      routesToPrefetch.forEach(route => {
+        prefetchData([route], async () => null);
+      });
     };
 
     const timeoutId = setTimeout(prefetchRelatedData, 100);
     return () => clearTimeout(timeoutId);
-  }, [location.pathname, prefetchData]);
+  }, [location.pathname, prefetchData, prefetchRoutes]);
 
   const clearCache = useCallback(() => {
     queryClient.clear();

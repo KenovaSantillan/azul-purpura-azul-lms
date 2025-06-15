@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLMS } from '@/contexts/LMSContext';
 import CreateGroupDialog from './groups/CreateGroupDialog';
 import GroupCard from './groups/GroupCard';
@@ -23,11 +23,20 @@ export default function GroupsManager() {
   const [groupToEdit, setGroupToEdit] = useState<Group | null>(null);
   const [groupToDelete, setGroupToDelete] = useState<Group | null>(null);
 
-  const activeGroups = groups.filter(g => g.status !== 'archived');
-  const archivedGroups = groups.filter(g => g.status === 'archived');
+  // Memoize filtered groups to prevent unnecessary re-renders
+  const { activeGroups, archivedGroups, groupsToShow, viewingGroupName } = useMemo(() => {
+    const active = groups.filter(g => g.status !== 'archived');
+    const archived = groups.filter(g => g.status === 'archived');
+    const toShow = showArchived ? archived : active;
+    const viewingName = viewingChat ? groups.find(g => g.id === viewingChat)?.name : '';
 
-  const groupsToShow = showArchived ? archivedGroups : activeGroups;
-  const viewingGroupName = viewingChat ? groups.find(g => g.id === viewingChat)?.name : '';
+    return {
+      activeGroups: active,
+      archivedGroups: archived,
+      groupsToShow: toShow,
+      viewingGroupName: viewingName
+    };
+  }, [groups, showArchived, viewingChat]);
 
   if (viewingChat) {
     return (
@@ -84,8 +93,8 @@ export default function GroupsManager() {
               <div className="flex items-center justify-between pt-4">
                 <Skeleton className="h-6 w-16" />
                 <div className="flex justify-end gap-2">
-                    <Skeleton className="h-9 w-24" />
-                    <Skeleton className="h-9 w-32" />
+                  <Skeleton className="h-9 w-24" />
+                  <Skeleton className="h-9 w-32" />
                 </div>
               </div>
             </div>

@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 
 interface UseLazyLoadingOptions {
   threshold?: number;
@@ -14,6 +14,7 @@ export const useLazyLoading = (options: UseLazyLoadingOptions = {}) => {
   const [hasIntersected, setHasIntersected] = useState(false);
   const [element, setElement] = useState<Element | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
+  const observerRef = useRef<IntersectionObserver>();
 
   const { 
     threshold = 0.1, 
@@ -23,6 +24,12 @@ export const useLazyLoading = (options: UseLazyLoadingOptions = {}) => {
     disabled = false
   } = options;
 
+  // Memoize observer options to prevent recreation
+  const observerOptions = useMemo(() => ({
+    threshold,
+    rootMargin
+  }), [threshold, rootMargin]);
+
   const elementRef = useCallback((node: Element | null) => {
     setElement(node);
   }, []);
@@ -30,7 +37,12 @@ export const useLazyLoading = (options: UseLazyLoadingOptions = {}) => {
   useEffect(() => {
     if (!element || disabled) return;
 
-    const observer = new IntersectionObserver(
+    // Clean up previous observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    observerRef.current = new IntersectionObserver(
       ([entry]) => {
         const isCurrentlyIntersecting = entry.isIntersecting;
         
@@ -53,22 +65,24 @@ export const useLazyLoading = (options: UseLazyLoadingOptions = {}) => {
         }
 
         // If 'once' is true and element has intersected, disconnect observer
-        if (once && isCurrentlyIntersecting) {
-          observer.disconnect();
+        if (once && isCurrentlyIntersecting && observerRef.current) {
+          observerRef.current.disconnect();
         }
       },
-      { threshold, rootMargin }
+      observerOptions
     );
 
-    observer.observe(element);
+    observerRef.current.observe(element);
 
     return () => {
-      observer.disconnect();
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [element, threshold, rootMargin, once, delay, disabled]);
+  }, [element, observerOptions, once, delay, disabled]);
 
   const reset = useCallback(() => {
     setIsIntersecting(false);
@@ -83,29 +97,39 @@ export const useLazyLoading = (options: UseLazyLoadingOptions = {}) => {
   };
 };
 
-// Hook for preloading images
+// Hook for preloading images with better performance
 export const useImagePreload = (src: string, enabled = true) => {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
+  const imageRef = useRef<HTMLImageElement>();
 
   useEffect(() => {
     if (!src || !enabled) return;
 
-    const img = new Image();
-    img.onload = () => setLoaded(true);
-    img.onerror = () => setError(true);
+    // Reuse existing image element if possible
+    if (!imageRef.current) {
+      imageRef.current = new Image();
+    }
+
+    const img = imageRef.current;
+    
+    const handleLoad = () => setLoaded(true);
+    const handleError = () => setError(true);
+
+    img.addEventListener('load', handleLoad);
+    img.addEventListener('error', handleError);
     img.src = src;
 
     return () => {
-      img.onload = null;
-      img.onerror = null;
+      img.removeEventListener('load', handleLoad);
+      img.removeEventListener('error', handleError);
     };
   }, [src, enabled]);
 
   return { loaded, error };
 };
 
-// Hook for lazy loading with viewport percentage
+// Hook for lazy loading with optimized viewport percentage
 export const useViewportLazyLoading = (viewportPercentage = 0.1) => {
   return useLazyLoading({
     threshold: viewportPercentage,

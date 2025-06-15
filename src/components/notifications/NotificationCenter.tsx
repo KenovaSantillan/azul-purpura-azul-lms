@@ -1,16 +1,17 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Bell, Check, X, Info, AlertTriangle, CheckCircle, Trash2 } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLMS } from '@/contexts/LMSContext';
 import { useUser } from '@/contexts/UserContext';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { useOptimizedCache } from '@/hooks/useOptimizedCache';
+import NotificationHeader from './NotificationHeader';
+import NotificationItem from './NotificationItem';
+import EmptyNotifications from './EmptyNotifications';
 
 interface Notification {
   id: string;
@@ -113,7 +114,7 @@ const NotificationCenter = () => {
       if (newNotifications.length > 0) {
         setNotifications(prev => {
           const updated = [...newNotifications, ...prev]
-            .slice(0, MAX_NOTIFICATIONS); // Limit total notifications
+            .slice(0, MAX_NOTIFICATIONS);
           persistNotifications(updated);
           return updated;
         });
@@ -133,8 +134,6 @@ const NotificationCenter = () => {
       return updated;
     });
     setUnreadCount(prev => Math.max(0, prev - 1));
-    
-    // Update cache to reflect read state
     updateCache(['notifications'], (old) => ({ ...old, updated: Date.now() }));
   }, [persistNotifications, updateCache]);
 
@@ -166,15 +165,6 @@ const NotificationCenter = () => {
     localStorage.removeItem(NOTIFICATION_STORAGE_KEY);
   }, []);
 
-  const getIcon = (type: Notification['type']) => {
-    switch (type) {
-      case 'success': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'warning': return <AlertTriangle className="h-4 w-4 text-yellow-500" />;
-      case 'error': return <X className="h-4 w-4 text-red-500" />;
-      default: return <Info className="h-4 w-4 text-blue-500" />;
-    }
-  };
-
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
@@ -192,82 +182,25 @@ const NotificationCenter = () => {
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
         <Card className="border-0 shadow-lg">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Notificaciones</CardTitle>
-              <div className="flex gap-1">
-                {unreadCount > 0 && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={markAllAsRead}
-                    className="text-xs"
-                  >
-                    <Check className="h-3 w-3 mr-1" />
-                    Marcar todas
-                  </Button>
-                )}
-                {notifications.length > 0 && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={clearAllNotifications}
-                    className="text-xs text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
-            </div>
-          </CardHeader>
+          <NotificationHeader
+            unreadCount={unreadCount}
+            hasNotifications={notifications.length > 0}
+            onMarkAllAsRead={markAllAsRead}
+            onClearAll={clearAllNotifications}
+          />
           <CardContent className="p-0">
             <ScrollArea className="h-96">
               {notifications.length === 0 ? (
-                <div className="p-4 text-center text-muted-foreground">
-                  <Bell className="mx-auto h-8 w-8 mb-2 opacity-50" />
-                  <p>No hay notificaciones</p>
-                </div>
+                <EmptyNotifications />
               ) : (
                 <div className="space-y-1">
                   {notifications.map((notification) => (
-                    <div
+                    <NotificationItem
                       key={notification.id}
-                      className={`p-3 border-b hover:bg-accent/50 cursor-pointer transition-colors group ${
-                        !notification.read ? 'bg-primary/5' : ''
-                      }`}
-                      onClick={() => markAsRead(notification.id)}
-                    >
-                      <div className="flex items-start gap-3">
-                        {getIcon(notification.type)}
-                        <div className="flex-1 space-y-1">
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-medium">{notification.title}</h4>
-                            <div className="flex items-center gap-1">
-                              {!notification.read && (
-                                <div className="h-2 w-2 bg-primary rounded-full" />
-                              )}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  removeNotification(notification.id);
-                                }}
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </div>
-                          <p className="text-sm text-muted-foreground line-clamp-2">
-                            {notification.message}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {format(notification.timestamp, "d MMM yyyy HH:mm", { locale: es })}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                      notification={notification}
+                      onMarkAsRead={markAsRead}
+                      onRemove={removeNotification}
+                    />
                   ))}
                 </div>
               )}
