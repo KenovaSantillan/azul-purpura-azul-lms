@@ -131,10 +131,10 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                     >
                       <button
                         onClick={() => onSectionChange(item.url.replace('#', ''))}
-                        className="w-full flex items-center gap-3 p-3 rounded-lg"
+                        className="w-full flex items-center gap-3 p-3 rounded-lg group"
                       >
-                        <item.icon className="h-5 w-5" />
-                        <span>{item.title}</span>
+                        <item.icon className="h-5 w-5 transition-transform duration-300 ease-in-out group-hover:scale-110" />
+                        <span className="transition-transform duration-300 ease-in-out group-hover:translate-x-1">{item.title}</span>
                       </button>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -159,10 +159,10 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
                     >
                       <button
                         onClick={() => onSectionChange(item.url.replace('#', ''))}
-                        className="w-full flex items-center gap-3 p-3 rounded-lg"
+                        className="w-full flex items-center gap-3 p-3 rounded-lg group"
                       >
-                        <item.icon className="h-5 w-5" />
-                        <span>{item.title}</span>
+                        <item.icon className="h-5 w-5 transition-transform duration-300 ease-in-out group-hover:scale-110" />
+                        <span className="transition-transform duration-300 ease-in-out group-hover:translate-x-1">{item.title}</span>
                       </button>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
