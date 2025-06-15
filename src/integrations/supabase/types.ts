@@ -9,16 +9,264 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      announcements: {
+        Row: {
+          content: string
+          created_at: string | null
+          created_by: string
+          group_id: string | null
+          id: string
+          priority: Database["public"]["Enums"]["announcement_priority"]
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          created_by: string
+          group_id?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["announcement_priority"]
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          created_by?: string
+          group_id?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["announcement_priority"]
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "announcements_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_members: {
+        Row: {
+          group_id: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          created_at: string | null
+          grade: Database["public"]["Enums"]["grade"]
+          id: string
+          letter: Database["public"]["Enums"]["letter"]
+          name: string
+          shift: Database["public"]["Enums"]["shift"]
+          specialty: Database["public"]["Enums"]["specialty"]
+          teacher_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          grade: Database["public"]["Enums"]["grade"]
+          id?: string
+          letter: Database["public"]["Enums"]["letter"]
+          name: string
+          shift: Database["public"]["Enums"]["shift"]
+          specialty: Database["public"]["Enums"]["specialty"]
+          teacher_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          grade?: Database["public"]["Enums"]["grade"]
+          id?: string
+          letter?: Database["public"]["Enums"]["letter"]
+          name?: string
+          shift?: Database["public"]["Enums"]["shift"]
+          specialty?: Database["public"]["Enums"]["specialty"]
+          teacher_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "groups_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          id: string
+          name?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      task_assignees: {
+        Row: {
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_assignees_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_assignees_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          description: string | null
+          due_date: string | null
+          group_id: string
+          id: string
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          type: Database["public"]["Enums"]["task_type"]
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          due_date?: string | null
+          group_id: string
+          id?: string
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          type: Database["public"]["Enums"]["task_type"]
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          due_date?: string | null
+          group_id?: string
+          id?: string
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["task_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      is_group_member: {
+        Args: { _group_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_group_teacher: {
+        Args: { _group_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      announcement_priority: "low" | "medium" | "high"
+      app_role: "student" | "teacher" | "tutor" | "parent"
+      grade: "1o" | "2o" | "3o" | "4o" | "5o" | "6o"
+      letter: "A" | "B" | "C" | "D" | "E"
+      shift: "Matutino" | "Vespertino"
+      specialty:
+        | "Servicios de Hospedaje"
+        | "Programación"
+        | "Contabilidad"
+        | "Construcción"
+      task_status: "pending" | "in-progress" | "completed"
+      task_type: "collective" | "group" | "individual"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +381,20 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      announcement_priority: ["low", "medium", "high"],
+      app_role: ["student", "teacher", "tutor", "parent"],
+      grade: ["1o", "2o", "3o", "4o", "5o", "6o"],
+      letter: ["A", "B", "C", "D", "E"],
+      shift: ["Matutino", "Vespertino"],
+      specialty: [
+        "Servicios de Hospedaje",
+        "Programación",
+        "Contabilidad",
+        "Construcción",
+      ],
+      task_status: ["pending", "in-progress", "completed"],
+      task_type: ["collective", "group", "individual"],
+    },
   },
 } as const

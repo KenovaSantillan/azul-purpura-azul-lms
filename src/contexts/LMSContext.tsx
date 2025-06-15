@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Group, User, Task, Announcement, StudentProgress, Team, UserRole } from '@/types/lms';
+import { useAuth } from './AuthContext';
 
 interface LMSContextType {
   groups: Group[];
@@ -34,12 +35,22 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
-  const [currentUser] = useState<User | null>({
-    id: '1',
-    name: 'Director Académico',
-    email: 'director@escuela.edu',
-    role: 'teacher'
-  });
+  
+  const { user: authUser } = useAuth();
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (authUser) {
+      setCurrentUser({
+        id: authUser.id,
+        name: authUser.user_metadata.name ?? authUser.email!,
+        email: authUser.email!,
+        role: authUser.user_metadata.role ?? 'student',
+      });
+    } else {
+      setCurrentUser(null);
+    }
+  }, [authUser]);
 
   // Initialize with sample data
   useEffect(() => {
