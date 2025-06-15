@@ -1,0 +1,17 @@
+
+/* Custom drag and drop styles */
+.drag-item {
+  @apply transition-all duration-200 cursor-move hover:shadow-lg;
+}
+
+.drag-over {
+  @apply bg-accent/50 border-2 border-dashed border-primary;
+}
+
+.drop-zone {
+  @apply min-h-[100px] border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 transition-colors;
+}
+
+.drop-zone.active {
+  @apply border-primary bg-accent/20;
+}
