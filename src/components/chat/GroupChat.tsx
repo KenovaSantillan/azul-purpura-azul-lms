@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useLMS } from '@/contexts/LMSContext';
@@ -27,7 +26,7 @@ const GroupChat: React.FC<GroupChatProps> = ({ groupId }) => {
       setLoading(true);
       const { data, error } = await supabase
         .from('group_chat_messages')
-        .select('*, profiles(name, avatar_url)')
+        .select('*, profiles(first_name, last_name, avatar_url)')
         .eq('group_id', groupId)
         .order('created_at', { ascending: true });
 
@@ -60,7 +59,7 @@ const GroupChat: React.FC<GroupChatProps> = ({ groupId }) => {
         async (payload) => {
           const { data, error } = await supabase
             .from('group_chat_messages')
-            .select('*, profiles(name, avatar_url)')
+            .select('*, profiles(first_name, last_name, avatar_url)')
             .eq('id', payload.new.id)
             .single();
             
@@ -94,6 +93,12 @@ const GroupChat: React.FC<GroupChatProps> = ({ groupId }) => {
     }
   };
 
+  const getFullName = (profile: { first_name: string | null; last_name: string | null } | null | undefined) => {
+    if (!profile) return 'Usuario';
+    const fullName = `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
+    return fullName || 'Usuario';
+  };
+
   const getInitials = (name: string | null | undefined) => {
     return name ? name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U';
   };
@@ -116,44 +121,47 @@ const GroupChat: React.FC<GroupChatProps> = ({ groupId }) => {
                 <Skeleton className="h-10 w-2/3" />
             </div>
           </div>
-        ) : messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex items-start gap-2 ${
-              msg.user_id === currentUser?.id ? 'justify-end' : 'justify-start'
-            }`}
-          >
-            {msg.user_id !== currentUser?.id && (
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={msg.profiles?.avatar_url ?? undefined} alt={msg.profiles?.name ?? 'Avatar'} />
-                <AvatarFallback>{getInitials(msg.profiles?.name)}</AvatarFallback>
-              </Avatar>
-            )}
+        ) : messages.map((msg) => {
+          const profileName = getFullName(msg.profiles);
+          return (
             <div
-              className={`max-w-xs md:max-w-md lg:max-w-lg rounded-lg px-3 py-2 ${
-                msg.user_id === currentUser?.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted'
+              key={msg.id}
+              className={`flex items-start gap-2 ${
+                msg.user_id === currentUser?.id ? 'justify-end' : 'justify-start'
               }`}
             >
               {msg.user_id !== currentUser?.id && (
-                <p className="text-xs font-bold mb-1">{msg.profiles?.name}</p>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={msg.profiles?.avatar_url ?? undefined} alt={profileName} />
+                  <AvatarFallback>{getInitials(profileName)}</AvatarFallback>
+                </Avatar>
               )}
-              <p className="text-sm break-words">{msg.content}</p>
-              <p className={`text-xs mt-1 text-right ${
-                msg.user_id === currentUser?.id ? 'text-primary-foreground/70' : 'text-muted-foreground'
-              }`}>
-                {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true, locale: es })}
-              </p>
+              <div
+                className={`max-w-xs md:max-w-md lg:max-w-lg rounded-lg px-3 py-2 ${
+                  msg.user_id === currentUser?.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted'
+                }`}
+              >
+                {msg.user_id !== currentUser?.id && (
+                  <p className="text-xs font-bold mb-1">{profileName}</p>
+                )}
+                <p className="text-sm break-words">{msg.content}</p>
+                <p className={`text-xs mt-1 text-right ${
+                  msg.user_id === currentUser?.id ? 'text-primary-foreground/70' : 'text-muted-foreground'
+                }`}>
+                  {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true, locale: es })}
+                </p>
+              </div>
+               {msg.user_id === currentUser?.id && (
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
+                  <AvatarFallback>{getInitials(currentUser.name)}</AvatarFallback>
+                </Avatar>
+              )}
             </div>
-             {msg.user_id === currentUser?.id && (
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
-                <AvatarFallback>{getInitials(currentUser.name)}</AvatarFallback>
-              </Avatar>
-            )}
-          </div>
-        ))}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
       <div className="p-4 border-t bg-background/50">

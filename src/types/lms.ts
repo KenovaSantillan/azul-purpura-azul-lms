@@ -102,7 +102,8 @@ export interface GroupChatMessage {
   content: string;
   created_at: string;
   profiles: {
-    name: string | null;
+    first_name: string | null;
+    last_name: string | null;
     avatar_url: string | null;
   } | null;
 }
