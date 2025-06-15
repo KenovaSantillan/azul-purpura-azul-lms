@@ -169,27 +169,33 @@ export type Database = {
           avatar_url: string | null
           created_at: string | null
           email: string | null
+          first_name: string | null
           id: string
-          name: string | null
+          last_name: string | null
           role: Database["public"]["Enums"]["app_role"]
+          status: Database["public"]["Enums"]["user_status"]
           updated_at: string | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string | null
           email?: string | null
+          first_name?: string | null
           id: string
-          name?: string | null
+          last_name?: string | null
           role: Database["public"]["Enums"]["app_role"]
+          status?: Database["public"]["Enums"]["user_status"]
           updated_at?: string | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string | null
           email?: string | null
+          first_name?: string | null
           id?: string
-          name?: string | null
+          last_name?: string | null
           role?: Database["public"]["Enums"]["app_role"]
+          status?: Database["public"]["Enums"]["user_status"]
           updated_at?: string | null
         }
         Relationships: []
@@ -436,7 +442,7 @@ export type Database = {
     }
     Enums: {
       announcement_priority: "low" | "medium" | "high"
-      app_role: "student" | "teacher" | "tutor" | "parent"
+      app_role: "student" | "teacher" | "tutor" | "parent" | "admin"
       grade: "1o" | "2o" | "3o" | "4o" | "5o" | "6o"
       letter: "A" | "B" | "C" | "D" | "E"
       shift: "Matutino" | "Vespertino"
@@ -453,6 +459,7 @@ export type Database = {
         | "graded"
         | "plagiarized"
       task_type: "collective" | "group" | "individual"
+      user_status: "pending" | "active" | "inactive"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -569,7 +576,7 @@ export const Constants = {
   public: {
     Enums: {
       announcement_priority: ["low", "medium", "high"],
-      app_role: ["student", "teacher", "tutor", "parent"],
+      app_role: ["student", "teacher", "tutor", "parent", "admin"],
       grade: ["1o", "2o", "3o", "4o", "5o", "6o"],
       letter: ["A", "B", "C", "D", "E"],
       shift: ["Matutino", "Vespertino"],
@@ -588,6 +595,7 @@ export const Constants = {
         "plagiarized",
       ],
       task_type: ["collective", "group", "individual"],
+      user_status: ["pending", "active", "inactive"],
     },
   },
 } as const

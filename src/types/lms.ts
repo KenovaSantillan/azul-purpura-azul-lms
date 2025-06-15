@@ -3,7 +3,7 @@ export type Letter = 'A' | 'B' | 'C' | 'D' | 'E';
 export type Specialty = 'Servicios de Hospedaje' | 'Programación' | 'Contabilidad' | 'Construcción';
 export type Shift = 'Matutino' | 'Vespertino';
 export type TaskType = 'collective' | 'group' | 'individual';
-export type UserRole = 'student' | 'teacher' | 'tutor' | 'parent';
+export type UserRole = 'student' | 'teacher' | 'tutor' | 'parent' | 'admin';
 
 export interface User {
   id: string;
@@ -13,7 +13,7 @@ export interface User {
   avatar?: string;
   parentId?: string; // For students linked to parents
   studentIds?: string[]; // For parents linked to students
-  status?: 'active' | 'inactive';
+  status?: 'pending' | 'active' | 'inactive';
 }
 
 export interface Group {

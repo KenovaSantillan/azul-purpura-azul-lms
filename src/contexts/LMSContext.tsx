@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Group, User, Task, Announcement, StudentProgress, Team, UserRole, TaskSubmission } from '@/types/lms';
+import { Group, User, Task, Announcement, StudentProgress, Team, TaskSubmission } from '@/types/lms';
 import { useAuth } from './AuthContext';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { User as AuthUser } from '@supabase/supabase-js';
 
 interface LMSContextType {
   groups: Group[];
@@ -12,6 +13,7 @@ interface LMSContextType {
   teams: Team[];
   taskSubmissions: TaskSubmission[];
   currentUser: User | null;
+  loadingCurrentUser: boolean;
   addGroup: (group: Omit<Group, 'id' | 'createdAt'>) => void;
   updateGroup: (id: string, group: Partial<Group>) => void;
   archiveGroup: (id: string) => void;
@@ -61,19 +63,40 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
   
   const { user: authUser } = useAuth();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [loadingCurrentUser, setLoadingCurrentUser] = useState(true);
 
   useEffect(() => {
+    const fetchUserProfile = async (user: AuthUser) => {
+      setLoadingCurrentUser(true);
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // Ignore "0 rows" error which can happen temporarily
+        toast.error("No se pudo cargar el perfil del usuario.");
+        console.error("Error fetching profile:", error);
+        setCurrentUser(null);
+      } else if (profile) {
+        const userWithStatus: User = {
+          id: profile.id,
+          name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
+          email: profile.email!,
+          role: profile.role,
+          avatar: profile.avatar_url,
+          status: profile.status,
+        };
+        setCurrentUser(userWithStatus);
+      }
+      setLoadingCurrentUser(false);
+    };
+
     if (authUser) {
-      setCurrentUser({
-        id: authUser.id,
-        name: authUser.user_metadata.name ?? authUser.email!,
-        email: authUser.email!,
-        role: authUser.user_metadata.role ?? 'student',
-        avatar: authUser.user_metadata.avatar_url,
-        status: 'active',
-      });
+      fetchUserProfile(authUser);
     } else {
       setCurrentUser(null);
+      setLoadingCurrentUser(false);
     }
   }, [authUser]);
 
@@ -351,6 +374,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
       teams,
       taskSubmissions,
       currentUser,
+      loadingCurrentUser,
       addGroup,
       updateGroup,
       archiveGroup,

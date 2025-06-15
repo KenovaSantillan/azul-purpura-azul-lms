@@ -8,13 +8,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
+import { formatName } from '@/lib/string-utils';
 
 export default function AuthPage() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  const [signupName, setSignupName] = useState('');
+  const [signupFirstName, setSignupFirstName] = useState('');
+  const [signupLastName, setSignupLastName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [showSignupPassword, setShowSignupPassword] = useState(false);
@@ -49,7 +51,8 @@ export default function AuthPage() {
       password: signupPassword,
       options: {
         data: {
-          name: signupName,
+          first_name: signupFirstName,
+          last_name: signupLastName,
           role: 'student', // Default role for new signups is 'student'
         },
         emailRedirectTo: `${window.location.origin}/`,
@@ -64,7 +67,7 @@ export default function AuthPage() {
     } else {
       toast({
         title: 'Registro exitoso',
-        description: 'Por favor, revisa tu correo para confirmar tu cuenta.',
+        description: 'Tu cuenta está pendiente de aprobación. Recibirás un correo cuando sea activada.',
       });
     }
     setLoading(false);
@@ -73,7 +76,8 @@ export default function AuthPage() {
   const handleTabChange = () => {
     setLoginEmail('');
     setLoginPassword('');
-    setSignupName('');
+    setSignupFirstName('');
+    setSignupLastName('');
     setSignupEmail('');
     setSignupPassword('');
     setShowLoginPassword(false);
@@ -141,8 +145,12 @@ export default function AuthPage() {
               <CardContent>
                 <form onSubmit={handleSignUp} className="space-y-4">
                    <div className="space-y-2">
-                    <Label htmlFor="signup-name">Nombre Completo</Label>
-                    <Input id="signup-name" type="text" placeholder="Tu nombre completo" value={signupName} onChange={(e) => setSignupName(e.target.value)} required />
+                    <Label htmlFor="signup-first-name">Nombre(s)</Label>
+                    <Input id="signup-first-name" type="text" placeholder="Tu nombre(s)" value={signupFirstName} onChange={(e) => setSignupFirstName(formatName(e.target.value))} required />
+                  </div>
+                   <div className="space-y-2">
+                    <Label htmlFor="signup-last-name">Apellidos</Label>
+                    <Input id="signup-last-name" type="text" placeholder="Tus apellidos" value={signupLastName} onChange={(e) => setSignupLastName(formatName(e.target.value))} required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Correo Electrónico</Label>
