@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Group, User, Task, Announcement, StudentProgress, Team, UserRole, TaskSubmission } from '@/types/lms';
 import { useAuth } from './AuthContext';
+import { toast } from 'sonner';
 
 interface LMSContextType {
   groups: Group[];
@@ -12,6 +13,9 @@ interface LMSContextType {
   currentUser: User | null;
   addGroup: (group: Omit<Group, 'id' | 'createdAt'>) => void;
   updateGroup: (id: string, group: Partial<Group>) => void;
+  archiveGroup: (id: string) => void;
+  restoreGroup: (id: string) => void;
+  copyGroup: (id: string) => void;
   deleteGroup: (id: string) => void;
   addUser: (user: Omit<User, 'id'>) => void;
   updateUser: (id: string, user: Partial<User>) => void;
@@ -64,6 +68,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
         email: authUser.email!,
         role: authUser.user_metadata.role ?? 'student',
         avatar: authUser.user_metadata.avatar_url,
+        status: 'active',
       });
     } else {
       setCurrentUser(null);
@@ -73,11 +78,11 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
   // Initialize with sample data
   useEffect(() => {
     const sampleUsers: User[] = [
-      { id: '1', name: 'Prof. María González', email: 'maria@escuela.edu', role: 'teacher' },
-      { id: '2', name: 'Juan Pérez', email: 'juan@estudiante.edu', role: 'student' },
-      { id: '3', name: 'Ana Martínez', email: 'ana@estudiante.edu', role: 'student' },
-      { id: '4', name: 'Carlos López', email: 'carlos@estudiante.edu', role: 'student' },
-      { id: '5', name: 'Tutor Rodríguez', email: 'tutor@escuela.edu', role: 'tutor' },
+      { id: '1', name: 'Prof. María González', email: 'maria@escuela.edu', role: 'teacher', status: 'active' },
+      { id: '2', name: 'Juan Pérez', email: 'juan@estudiante.edu', role: 'student', status: 'active' },
+      { id: '3', name: 'Ana Martínez', email: 'ana@estudiante.edu', role: 'student', status: 'active' },
+      { id: '4', name: 'Carlos López', email: 'carlos@estudiante.edu', role: 'student', status: 'inactive' },
+      { id: '5', name: 'Tutor Rodríguez', email: 'tutor@escuela.edu', role: 'tutor', status: 'active' },
     ];
 
     const sampleGroups: Group[] = [
@@ -92,6 +97,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
         tutorId: '5',
         students: sampleUsers.filter(u => u.role === 'student'),
         createdAt: new Date(),
+        status: 'active',
       }
     ];
 
@@ -154,6 +160,33 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
 
   const updateGroup = (id: string, group: Partial<Group>) => {
     setGroups(prev => prev.map(g => g.id === id ? { ...g, ...group } : g));
+  };
+
+  const archiveGroup = (id: string) => {
+    updateGroup(id, { status: 'archived' });
+  };
+
+  const restoreGroup = (id: string) => {
+    updateGroup(id, { status: 'active' });
+  };
+
+  const copyGroup = (id: string) => {
+    const groupToCopy = groups.find(g => g.id === id);
+    if (!groupToCopy) {
+      toast.error("No se pudo encontrar el grupo para copiar.");
+      return;
+    }
+
+    const newGroup: Group = {
+      ...groupToCopy,
+      id: Date.now().toString(),
+      name: `Copia de ${groupToCopy.name}`,
+      createdAt: new Date(),
+      students: [], // No se copian los estudiantes
+      status: 'active',
+    };
+    setGroups(prev => [...prev, newGroup]);
+    toast.success(`Grupo "${groupToCopy.name}" copiado.`);
   };
 
   const deleteGroup = (id: string) => {
@@ -299,6 +332,9 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
       currentUser,
       addGroup,
       updateGroup,
+      archiveGroup,
+      restoreGroup,
+      copyGroup,
       deleteGroup,
       addUser,
       updateUser,

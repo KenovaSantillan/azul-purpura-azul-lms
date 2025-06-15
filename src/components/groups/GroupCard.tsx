@@ -1,11 +1,11 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Group, Specialty } from '@/types/lms';
 import { useLMS } from '@/contexts/LMSContext';
-import { Users, User as UserIcon, Pencil } from 'lucide-react';
+import { Users, User as UserIcon, Pencil, Archive, ArchiveRestore, Copy } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface GroupCardProps {
     group: Group;
@@ -25,13 +25,31 @@ const getSpecialtyColor = (specialty: Specialty) => {
 };
 
 export default function GroupCard({ group, index, isSelected, onSelect }: GroupCardProps) {
-    const { users } = useLMS();
+    const { users, archiveGroup, restoreGroup, copyGroup } = useLMS();
 
     const handleEditClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       // Lógica para editar el grupo. Por ahora, una alerta.
       alert(`Editando el grupo: ${group.name}`);
     };
+
+    const handleArchiveClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (group.status === 'archived') {
+        restoreGroup(group.id);
+        toast.success(`Grupo "${group.name}" restaurado.`);
+      } else {
+        archiveGroup(group.id);
+        toast.success(`Grupo "${group.name}" archivado.`);
+      }
+      onSelect(null);
+    };
+
+    const handleCopyClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      copyGroup(group.id);
+      onSelect(null);
+    }
 
     return (
         <Card 
@@ -79,13 +97,21 @@ export default function GroupCard({ group, index, isSelected, onSelect }: GroupC
                     {group.tutorId && (
                       <p className="text-sm"><strong>Tutor:</strong> {users.find(u => u.id === group.tutorId)?.name}</p>
                     )}
-                    <div className="flex gap-2 mt-3">
-                      <Button size="sm" variant="outline" className="flex-1">
-                        Editar
-                      </Button>
-                      <Button size="sm" variant="outline" className="flex-1">
-                        Ver Detalles
-                      </Button>
+                    <div className="flex flex-col gap-2 pt-2">
+                        <div className="flex gap-2">
+                            <Button size="sm" variant="outline" className="flex-1" onClick={handleEditClick}>
+                                <Pencil className="h-4 w-4 mr-2" /> Editar
+                            </Button>
+                            <Button size="sm" variant="outline" className="flex-1" onClick={handleCopyClick}>
+                                <Copy className="h-4 w-4 mr-2" /> Copiar
+                            </Button>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button size="sm" variant={group.status === 'archived' ? 'default' : 'destructive'} className="flex-1" onClick={handleArchiveClick}>
+                                {group.status === 'archived' ? <ArchiveRestore className="h-4 w-4 mr-2" /> : <Archive className="h-4 w-4 mr-2" />}
+                                {group.status === 'archived' ? 'Restaurar' : 'Archivar'}
+                            </Button>
+                        </div>
                     </div>
                   </div>
                 )}

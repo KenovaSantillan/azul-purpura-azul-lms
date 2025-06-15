@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -12,6 +11,9 @@ import { AlertTutorDialog } from './AlertTutorDialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { AlertParentDialog } from './AlertParentDialog';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 const chartConfig = {
   ponderacion: {
@@ -20,7 +22,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const StudentManagement = () => {
-  const { groups, users } = useLMS();
+  const { groups, users, updateUser } = useLMS();
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
   const [isParentAlertDialogOpen, setIsParentAlertDialogOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<User | null>(null);
@@ -42,6 +44,12 @@ const StudentManagement = () => {
   const handleParentAlertClick = (student: User) => {
     setSelectedStudent(student);
     setIsParentAlertDialogOpen(true);
+  };
+
+  const handleStatusChange = (studentId: string, isActive: boolean) => {
+    const newStatus = isActive ? 'active' : 'inactive';
+    updateUser(studentId, { status: newStatus });
+    toast.success(`Estudiante ${newStatus === 'active' ? 'habilitado' : 'inhabilitado'}.`);
   };
 
   const studentDataForChart = students.map(student => ({
@@ -87,16 +95,29 @@ const StudentManagement = () => {
                   <TableHead>Nombre Completo</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Rol</TableHead>
+                  <TableHead>Estado</TableHead>
                   <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {students.map((student) => (
-                  <TableRow key={student.id}>
+                  <TableRow key={student.id} className={cn(student.status === 'inactive' && "text-muted-foreground opacity-60")}>
                     <TableCell className="font-medium">{student.id}</TableCell>
                     <TableCell>{student.name}</TableCell>
                     <TableCell>{student.email}</TableCell>
                     <TableCell>{student.role}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          id={`status-${student.id}`}
+                          checked={student.status === 'active'}
+                          onCheckedChange={(checked) => handleStatusChange(student.id, checked)}
+                        />
+                        <Label htmlFor={`status-${student.id}`}>
+                          {student.status === 'active' ? "Activo" : "Inactivo"}
+                        </Label>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="icon" onClick={() => handleAlertClick(student)} title="Alertar al Tutor">

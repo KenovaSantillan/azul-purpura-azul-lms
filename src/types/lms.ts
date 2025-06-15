@@ -13,6 +13,7 @@ export interface User {
   avatar?: string;
   parentId?: string; // For students linked to parents
   studentIds?: string[]; // For parents linked to students
+  status?: 'active' | 'inactive';
 }
 
 export interface Group {
@@ -27,6 +28,7 @@ export interface Group {
   students: User[];
   color?: string;
   createdAt: Date;
+  status?: 'active' | 'archived';
 }
 
 export interface Task {
