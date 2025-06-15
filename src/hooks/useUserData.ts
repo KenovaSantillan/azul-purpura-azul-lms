@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { User, UserRole } from '@/types/lms';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,6 +5,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { RealtimeChannel } from '@supabase/supabase-js';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { crypto } from 'crypto';
 
 export function useUserData() {
     const [users, setUsers] = useState<User[]>([]);
@@ -112,6 +112,61 @@ export function useUserData() {
         setUsers(prev => [...prev, newUser]);
     };
 
+    const createUserMutation = useMutation({
+        mutationFn: async (userData: { email: string; role: UserRole; first_name: string; last_name: string; }) => {
+            const { email, role, first_name, last_name } = userData;
+            // Generate a secure temporary password. User will need to reset it.
+            const password = crypto.randomUUID();
+
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        first_name,
+                        last_name,
+                        role,
+                    },
+                },
+            });
+
+            if (error) {
+                // Check if user already exists
+                if (error.message.includes('User already registered')) {
+                    throw new Error(`El correo ${email} ya está registrado.`);
+                }
+                throw new Error(error.message);
+            }
+
+            if (!data.user) {
+                throw new Error("No se pudo crear el usuario.");
+            }
+
+            // The trigger handle_new_user creates the profile.
+            // We can optimistically return the new user data.
+            const newUser: User = {
+                id: data.user.id,
+                name: `${first_name} ${last_name}`,
+                email: data.user.email!,
+                role: role,
+                status: 'pending', // The trigger sets the initial status
+            };
+            return newUser;
+        },
+        onSuccess: (newUser) => {
+            queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+            toast.success(`Usuario "${newUser.name}" creado exitosamente.`);
+        },
+        onError: (error: Error) => {
+            // Toast is handled in the component for more specific messages
+            console.error('Error creating user:', error);
+        },
+    });
+
+    const createUser = async (userData: { email: string; role: UserRole; first_name: string; last_name: string; }) => {
+        return await createUserMutation.mutateAsync(userData);
+    };
+
     const bulkAddUsers = (newUsers: User[]) => {
         setUsers(prev => {
             const existingIds = new Set(prev.map(u => u.id));
@@ -188,7 +243,7 @@ export function useUserData() {
         currentUser: currentUser ?? null,
         loadingCurrentUser,
         addUser,
-        bulkAddUsers,
+        createUser,
         updateUser,
         deleteUser,
     };

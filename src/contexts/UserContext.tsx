@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext } from 'react';
 import { User } from '@/types/lms';
 import { useUserData } from '@/hooks/useUserData';
@@ -8,7 +7,7 @@ interface UserContextType {
   currentUser: User | null;
   loadingCurrentUser: boolean;
   addUser: (user: Omit<User, 'id'>) => void;
-  bulkAddUsers: (users: User[]) => void;
+  createUser: (userData: { email: string; role: 'student' | 'teacher' | 'tutor' | 'parent' | 'admin'; first_name: string; last_name: string; }) => Promise<User>;
   updateUser: (id: string, user: Partial<User>) => Promise<void>;
   deleteUser: (id: string) => void;
 }
