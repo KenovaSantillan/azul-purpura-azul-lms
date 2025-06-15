@@ -132,7 +132,9 @@ export type Database = {
           name: string
           shift: Database["public"]["Enums"]["shift"]
           specialty: Database["public"]["Enums"]["specialty"]
+          status: Database["public"]["Enums"]["group_status"]
           teacher_id: string | null
+          tutor_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -142,7 +144,9 @@ export type Database = {
           name: string
           shift: Database["public"]["Enums"]["shift"]
           specialty: Database["public"]["Enums"]["specialty"]
+          status?: Database["public"]["Enums"]["group_status"]
           teacher_id?: string | null
+          tutor_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -152,12 +156,21 @@ export type Database = {
           name?: string
           shift?: Database["public"]["Enums"]["shift"]
           specialty?: Database["public"]["Enums"]["specialty"]
+          status?: Database["public"]["Enums"]["group_status"]
           teacher_id?: string | null
+          tutor_id?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "groups_teacher_id_fkey"
             columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "groups_tutor_id_fkey"
+            columns: ["tutor_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -444,6 +457,7 @@ export type Database = {
       announcement_priority: "low" | "medium" | "high"
       app_role: "student" | "teacher" | "tutor" | "parent" | "admin"
       grade: "1o" | "2o" | "3o" | "4o" | "5o" | "6o"
+      group_status: "active" | "archived"
       letter: "A" | "B" | "C" | "D" | "E"
       shift: "Matutino" | "Vespertino"
       specialty:
@@ -578,6 +592,7 @@ export const Constants = {
       announcement_priority: ["low", "medium", "high"],
       app_role: ["student", "teacher", "tutor", "parent", "admin"],
       grade: ["1o", "2o", "3o", "4o", "5o", "6o"],
+      group_status: ["active", "archived"],
       letter: ["A", "B", "C", "D", "E"],
       shift: ["Matutino", "Vespertino"],
       specialty: [

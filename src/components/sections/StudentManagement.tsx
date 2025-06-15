@@ -8,10 +8,12 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Accordion } from '@/components/ui/accordion';
 import GroupStudentList from '../students/GroupStudentList';
 import StudentResultsView from '../students/StudentResultsView';
+import AddStudentsToGroupDialog from '../students/AddStudentsToGroupDialog';
 
 const StudentManagement = () => {
   const { groups } = useLMS();
   const [selectedStudent, setSelectedStudent] = useState<{ student: User; group: Group } | null>(null);
+  const [isAddStudentsDialogOpen, setIsAddStudentsDialogOpen] = useState(false);
 
   if (selectedStudent) {
     return (
@@ -34,28 +36,35 @@ const StudentManagement = () => {
   }
 
   return (
-    <div className="p-6 animate-fade-in space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Gestión de Estudiantes</h1>
-          <p className="text-muted-foreground">Revisa la lista de alumnos por grupo y su progreso.</p>
+    <>
+      <div className="p-6 animate-fade-in space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">Gestión de Estudiantes</h1>
+            <p className="text-muted-foreground">Revisa la lista de alumnos por grupo y su progreso.</p>
+          </div>
+          <Button onClick={() => setIsAddStudentsDialogOpen(true)}>
+            <FileUp className="mr-2 h-4 w-4" />
+            Agregar Alumnos (PDF)
+          </Button>
         </div>
-        <Button>
-          <FileUp className="mr-2 h-4 w-4" />
-          Agregar Alumnos (PDF)
-        </Button>
+        
+        <Accordion type="single" collapsible className="w-full space-y-2">
+          {groups.filter(g => g.status !== 'archived').map((group) => (
+            <GroupStudentList
+              key={group.id}
+              group={group}
+              onStudentSelect={(student) => setSelectedStudent({ student, group })}
+            />
+          ))}
+        </Accordion>
       </div>
-      
-      <Accordion type="single" collapsible className="w-full space-y-2">
-        {groups.filter(g => g.status !== 'archived').map((group) => (
-          <GroupStudentList
-            key={group.id}
-            group={group}
-            onStudentSelect={(student) => setSelectedStudent({ student, group })}
-          />
-        ))}
-      </Accordion>
-    </div>
+
+      <AddStudentsToGroupDialog
+        isOpen={isAddStudentsDialogOpen}
+        onOpenChange={setIsAddStudentsDialogOpen}
+      />
+    </>
   );
 };
 
