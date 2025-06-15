@@ -6,7 +6,7 @@ import { Dashboard } from '@/components/Dashboard';
 import { GroupsManager } from '@/components/GroupsManager';
 import { ThemeCustomizer } from '@/components/ThemeCustomizer';
 import { Button } from '@/components/ui/button';
-import { Circle } from 'lucide-react';
+import { Circle, Mic } from 'lucide-react';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -17,6 +17,17 @@ const Index = () => {
         return <Dashboard />;
       case 'groups':
         return <GroupsManager />;
+      case 'aula-virtual':
+        return (
+          <div className="p-6 animate-fade-in">
+            <h1 className="text-3xl font-bold mb-4">Aula Virtual</h1>
+            <p className="text-muted-foreground mb-6">Próximamente: Aulas virtuales interactivas para clases en tiempo real.</p>
+            <div className="border rounded-lg p-8 text-center bg-accent/20 animate-scale-in">
+              <h3 className="text-xl font-semibold">El aula virtual está en construcción</h3>
+              <p className="text-muted-foreground mt-2">Pronto podrás interactuar con tus estudiantes y profesores aquí.</p>
+            </div>
+          </div>
+        );
       case 'students':
         return (
           <div className="p-6 animate-fade-in">
@@ -101,12 +112,15 @@ const Index = () => {
             <div className="flex items-center gap-4">
               <SidebarTrigger />
               <div>
-                <h2 className="text-lg font-semibold">EduLMS Pro</h2>
+                <h2 className="text-lg font-semibold">Portal Kenova</h2>
                 <p className="text-sm text-muted-foreground">Sistema de Gestión Educativa</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <ThemeCustomizer />
+              <Button variant="ghost" size="icon" onClick={() => alert('Control por voz próximamente')}>
+                <Mic className="h-5 w-5" />
+              </Button>
             </div>
           </header>
           

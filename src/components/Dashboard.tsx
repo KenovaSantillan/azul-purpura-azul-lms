@@ -48,7 +48,7 @@ export function Dashboard() {
     <div className="p-6 space-y-6 animate-fade-in">
       <div>
         <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Bienvenido al sistema de gestión educativa</p>
+        <p className="text-muted-foreground">Bienvenido a Portal Kenova</p>
       </div>
 
       {/* Statistics Cards */}

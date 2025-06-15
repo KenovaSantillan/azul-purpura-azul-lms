@@ -27,6 +27,11 @@ const menuItems = [
     icon: Users,
   },
   {
+    title: 'Aula Virtual',
+    url: '#aula-virtual',
+    icon: Circle,
+  },
+  {
     title: 'Estudiantes',
     url: '#students',
     icon: User,
@@ -61,7 +66,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-lg font-bold text-primary mb-4">
-            🎓 EduLMS Pro
+            🎓 Portal Kenova
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -96,7 +101,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
             {theme === 'light' ? '🌙 Modo Oscuro' : '☀️ Modo Claro'}
           </Button>
           <div className="text-xs text-muted-foreground text-center">
-            EduLMS Pro v1.0
+            Portal Kenova v1.0
           </div>
         </div>
       </SidebarFooter>
