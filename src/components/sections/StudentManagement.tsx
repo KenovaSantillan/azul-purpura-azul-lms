@@ -9,9 +9,10 @@ import { Accordion } from '@/components/ui/accordion';
 import GroupStudentList from '../students/GroupStudentList';
 import StudentResultsView from '../students/StudentResultsView';
 import AddStudentsToGroupDialog from '../students/AddStudentsToGroupDialog';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const StudentManagement = () => {
-  const { groups } = useLMS();
+  const { groups, loadingGroups } = useLMS();
   const [selectedStudent, setSelectedStudent] = useState<{ student: User; group: Group } | null>(null);
   const [isAddStudentsDialogOpen, setIsAddStudentsDialogOpen] = useState(false);
 
@@ -22,6 +23,25 @@ const StudentManagement = () => {
         group={selectedStudent.group}
         onBack={() => setSelectedStudent(null)}
       />
+    );
+  }
+
+  if (loadingGroups) {
+    return (
+      <div className="p-6 animate-fade-in space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <Skeleton className="h-9 w-64 mb-2" />
+            <Skeleton className="h-5 w-80" />
+          </div>
+          <Skeleton className="h-10 w-48" />
+        </div>
+        <div className="w-full space-y-2">
+          <Skeleton className="h-14 w-full rounded-lg" />
+          <Skeleton className="h-14 w-full rounded-lg" />
+          <Skeleton className="h-14 w-full rounded-lg" />
+        </div>
+      </div>
     );
   }
 

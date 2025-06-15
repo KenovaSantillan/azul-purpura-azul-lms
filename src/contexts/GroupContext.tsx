@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 export interface GroupContextType {
   groups: Group[];
+  loadingGroups: boolean;
   addGroup: (group: Omit<Group, 'id' | 'createdAt'>) => Group;
   updateGroup: (id: string, group: Partial<Group>) => void;
   archiveGroup: (id: string) => void;
@@ -20,7 +21,7 @@ const GroupContext = createContext<GroupContextType | undefined>(undefined);
 
 export function GroupProvider({ children }: { children: React.ReactNode }) {
   const [groups, setGroups] = useState<Group[]>([]);
-  const { users } = useUser();
+  const { users, loadingUsers } = useUser();
 
   useEffect(() => {
     if (users.length === 0) return;
@@ -109,6 +110,7 @@ export function GroupProvider({ children }: { children: React.ReactNode }) {
 
   const value = {
     groups,
+    loadingGroups: loadingUsers,
     addGroup,
     updateGroup,
     archiveGroup,

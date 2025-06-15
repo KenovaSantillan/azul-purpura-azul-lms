@@ -12,9 +12,10 @@ import { ArrowLeft } from 'lucide-react';
 import { Group } from '@/types/lms';
 import EditGroupDialog from './groups/EditGroupDialog';
 import DeleteGroupConfirmationDialog from './groups/DeleteGroupConfirmationDialog';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function GroupsManager() {
-  const { groups } = useLMS();
+  const { groups, loadingGroups } = useLMS();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
@@ -68,7 +69,29 @@ export default function GroupsManager() {
         </div>
       </div>
 
-      {groupsToShow.length > 0 ? (
+      {loadingGroups ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="border bg-card text-card-foreground rounded-lg shadow-sm p-6 space-y-4">
+              <div className="flex justify-between items-start">
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-8 w-8 rounded-md" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+              <div className="flex items-center justify-between pt-4">
+                <Skeleton className="h-6 w-16" />
+                <div className="flex justify-end gap-2">
+                    <Skeleton className="h-9 w-24" />
+                    <Skeleton className="h-9 w-32" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : groupsToShow.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {groupsToShow.map((group, index) => (
             <GroupCard 
