@@ -15,10 +15,14 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Task } from '@/types/lms';
 import { GradeTaskDialog } from './GradeTaskDialog';
+import { useUser } from '@/contexts/UserContext';
 
 const TaskManagement = () => {
   const { tasks } = useLMS();
+  const { currentUser } = useUser();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  const canUseAIGrading = currentUser?.role === 'teacher' && (currentUser.ai_grading_enabled ?? true);
 
   return (
     <div className="p-6 animate-fade-in">
@@ -49,10 +53,12 @@ const TaskManagement = () => {
                 </AlertDialog>
               )}
             </div>
-            <Button onClick={() => setSelectedTask(task)} disabled={!task.rubric_structured} size="sm">
-              <Bot className="mr-2 h-4 w-4" />
-              Calificar con IA
-            </Button>
+            {canUseAIGrading && (
+              <Button onClick={() => setSelectedTask(task)} disabled={!task.rubric_structured} size="sm">
+                <Bot className="mr-2 h-4 w-4" />
+                Calificar con IA
+              </Button>
+            )}
           </div>
         ))}
       </div>

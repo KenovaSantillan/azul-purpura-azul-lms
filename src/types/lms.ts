@@ -14,6 +14,7 @@ export interface User {
   parentId?: string; // For students linked to parents
   studentIds?: string[]; // For parents linked to students
   status?: 'pending' | 'active' | 'inactive';
+  ai_grading_enabled?: boolean;
 }
 
 export interface Group {

@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { Switch } from '@/components/ui/switch';
 
 const UserManagement = () => {
   const { groups, addUsersToGroup } = useLMS();
@@ -46,6 +47,7 @@ const UserManagement = () => {
     if (!user) return;
 
     const roleToAssign = selectedRoles[userId] || user.role;
+    const isTeacher = roleToAssign === 'teacher';
 
     if (roleToAssign === 'student') {
         const groupId = selectedGroups[userId];
@@ -57,7 +59,11 @@ const UserManagement = () => {
         addUsersToGroup(groupId, [userId]);
         toast.success("Alumno aprobado y asignado al grupo.");
     } else {
-        updateUser(userId, { status: 'active', role: roleToAssign });
+        updateUser(userId, { 
+          status: 'active', 
+          role: roleToAssign,
+          ...(isTeacher && { ai_grading_enabled: true })
+        });
         toast.success("Usuario aprobado.");
     }
   };
@@ -92,6 +98,7 @@ const UserManagement = () => {
                 <TableHead className="hidden sm:table-cell">Rol</TableHead>
                 <TableHead>Grupo</TableHead>
                 <TableHead>Estatus</TableHead>
+                <TableHead>Calificación IA</TableHead>
                 {showActions && <TableHead className="text-right">Acciones</TableHead>}
               </TableRow>
             </TableHeader>
@@ -141,6 +148,20 @@ const UserManagement = () => {
                       {user.status}
                     </Badge>
                   </TableCell>
+                  <TableCell>
+                    {user.role === 'teacher' ? (
+                      <Switch
+                        checked={user.ai_grading_enabled ?? true}
+                        onCheckedChange={(checked) => {
+                          updateUser(user.id, { ai_grading_enabled: checked });
+                          toast.success(`Calificación con IA ${checked ? 'habilitada' : 'deshabilitada'} para ${user.name}.`);
+                        }}
+                        disabled={user.status !== 'active'}
+                      />
+                    ) : (
+                      <span className="text-muted-foreground">N/A</span>
+                    )}
+                  </TableCell>
                   {showActions && (
                     <TableCell className="text-right">
                       <div className="flex gap-2 justify-end">
@@ -158,7 +179,7 @@ const UserManagement = () => {
                 </TableRow>
               )) : (
                 <TableRow>
-                  <TableCell colSpan={showActions ? 6 : 5} className="h-24 text-center">
+                  <TableCell colSpan={showActions ? 7 : 6} className="h-24 text-center">
                     No hay usuarios en esta categoría.
                   </TableCell>
                 </TableRow>
