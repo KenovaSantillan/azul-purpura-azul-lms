@@ -1,8 +1,9 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
+/* LMS Education Theme CSS Variables */
 
 @layer base {
   :root {
@@ -15,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 258 90% 66%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -24,7 +25,7 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
+    --accent: 258 70% 85%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -32,25 +33,18 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 258 90% 66%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-
+    --sidebar-background: 258 90% 96%;
     --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
+    --sidebar-primary: 258 90% 66%;
     --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
+    --sidebar-accent: 258 70% 90%;
     --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-border: 258 30% 85%;
+    --sidebar-ring: 258 90% 66%;
   }
 
   .dark {
@@ -63,7 +57,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 258 90% 66%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -80,15 +74,62 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 258 90% 66%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary: 258 90% 66%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 258 90% 66%;
+  }
+
+  /* Custom color themes */
+  .theme-blue {
+    --primary: 217 91% 60%;
+    --sidebar-primary: 217 91% 60%;
+  }
+  
+  .theme-green {
+    --primary: 142 76% 36%;
+    --sidebar-primary: 142 76% 36%;
+  }
+  
+  .theme-orange {
+    --primary: 25 95% 53%;
+    --sidebar-primary: 25 95% 53%;
+  }
+  
+  .theme-red {
+    --primary: 0 84% 60%;
+    --sidebar-primary: 0 84% 60%;
+  }
+  
+  .theme-pink {
+    --primary: 336 84% 57%;
+    --sidebar-primary: 336 84% 57%;
+  }
+  
+  .theme-indigo {
+    --primary: 239 84% 67%;
+    --sidebar-primary: 239 84% 67%;
+  }
+  
+  .theme-teal {
+    --primary: 173 80% 40%;
+    --sidebar-primary: 173 80% 40%;
+  }
+  
+  .theme-yellow {
+    --primary: 48 96% 53%;
+    --sidebar-primary: 48 96% 53%;
+  }
+  
+  .theme-cyan {
+    --primary: 189 94% 43%;
+    --sidebar-primary: 189 94% 43%;
   }
 }
 
@@ -99,5 +140,37 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Custom drag and drop styles */
+.drag-item {
+  @apply transition-all duration-200 cursor-move hover:shadow-lg;
+}
+
+.drag-over {
+  @apply bg-accent/50 border-2 border-dashed border-primary;
+}
+
+.drop-zone {
+  @apply min-h-[100px] border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 transition-colors;
+}
+
+.drop-zone.active {
+  @apply border-primary bg-accent/20;
+}
+
+/* Responsive utilities */
+@layer utilities {
+  .container-responsive {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .text-responsive {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+  
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
   }
 }

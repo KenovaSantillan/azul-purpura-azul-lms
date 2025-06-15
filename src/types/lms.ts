@@ -1,0 +1,71 @@
+
+export type Grade = '1o' | '2o' | '3o' | '4o' | '5o' | '6o';
+export type Letter = 'A' | 'B' | 'C' | 'D' | 'E';
+export type Specialty = 'Servicios de Hospedaje' | 'Programación' | 'Contabilidad' | 'Construcción';
+export type Shift = 'Matutino' | 'Vespertino';
+export type TaskType = 'collective' | 'group' | 'individual';
+export type UserRole = 'student' | 'teacher' | 'tutor' | 'parent';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  avatar?: string;
+  parentId?: string; // For students linked to parents
+  studentIds?: string[]; // For parents linked to students
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  grade: Grade;
+  letter: Letter;
+  specialty: Specialty;
+  shift: Shift;
+  teacherId: string;
+  tutorId?: string;
+  students: User[];
+  color?: string;
+  createdAt: Date;
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  type: TaskType;
+  groupId: string;
+  assignedTo: string[]; // Student IDs
+  dueDate: Date;
+  status: 'pending' | 'in-progress' | 'completed';
+  createdBy: string;
+  createdAt: Date;
+}
+
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  groupId?: string; // If null, it's for all groups
+  createdBy: string;
+  createdAt: Date;
+  priority: 'low' | 'medium' | 'high';
+}
+
+export interface StudentProgress {
+  studentId: string;
+  groupId: string;
+  completedTasks: number;
+  totalTasks: number;
+  grade: number;
+  lastActivity: Date;
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  groupId: string;
+  members: User[];
+  color?: string;
+}
