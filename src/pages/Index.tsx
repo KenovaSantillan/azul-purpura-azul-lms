@@ -1,3 +1,4 @@
+
 import React, { useState, Suspense, lazy } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -15,6 +16,7 @@ const ProgressTracking = lazy(() => import('@/components/sections/ProgressTracki
 const ThemeCustomizerSection = lazy(() => import('@/components/ThemeCustomizer').then(m => ({ default: m.ThemeCustomizer })));
 const Library = lazy(() => Promise.resolve({ default: () => <div className="p-6"><h1>Biblioteca de Recursos</h1><p>Próximamente disponible.</p></div> }));
 const AdminUserManagement = lazy(() => import('@/components/sections/admin/UserManagement'));
+const Legal = lazy(() => import('@/components/sections/Legal'));
 
 
 const Index = () => {
@@ -40,6 +42,8 @@ const Index = () => {
         return <Library />;
       case 'admin/users':
         return <AdminUserManagement />;
+      case 'legal':
+        return <Legal />;
       default:
         return <Dashboard />;
     }

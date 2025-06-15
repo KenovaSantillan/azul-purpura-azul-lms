@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Users, User, Folder, List, User as UserIcon, Circle, Settings, BookOpen } from 'lucide-react';
+import { Users, User, Folder, List, User as UserIcon, Circle, Settings, BookOpen, Shield } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -50,6 +49,12 @@ const menuConfig: {
       { title: 'Biblioteca', url: '#library', icon: BookOpen, roles: ['admin', 'teacher', 'student', 'tutor', 'parent'] },
     ]
   },
+  {
+    title: 'Legalmente',
+    items: [
+      { title: 'Avisos Legales', url: '#legal', icon: Shield, roles: ['admin', 'teacher', 'student', 'tutor', 'parent'] },
+    ]
+  }
 ];
 
 

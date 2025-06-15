@@ -1,8 +1,11 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTheme, ColorTheme } from '@/contexts/ThemeContext';
+import { useUser } from '@/contexts/UserContext';
+import { toast } from 'sonner';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useQueryClient } from '@tanstack/react-query';
 
 const colorThemes: { name: string; value: ColorTheme; color: string }[] = [
   { name: 'Púrpura (Por defecto)', value: 'default', color: '#9b87f5' },
@@ -22,8 +25,32 @@ const colorThemes: { name: string; value: ColorTheme; color: string }[] = [
   { name: 'Rosado', value: 'rose', color: '#f43f5e' },
 ];
 
+const avatarOptions = [
+  { name: 'Mujer con laptop', url: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=200&h=200&fit=crop&crop=faces' },
+  { name: 'Mujer programando', url: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&h=200&fit=crop&crop=faces' },
+  { name: 'Gatito', url: 'https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=200&h=200&fit=crop&crop=faces' },
+  { name: 'Mono con banana', url: 'https://images.unsplash.com/photo-1501286353178-1ec881214838?w=200&h=200&fit=crop&crop=faces' },
+  { name: 'Robot', url: 'https://robohash.org/kenova-robot.png?size=200x200' },
+  { name: 'Monstruo', url: 'https://robohash.org/kenova-monster.png?size=200x200&set=set2' },
+  { name: 'Gato robot', url: 'https://robohash.org/kenova-cat.png?size=200x200&set=set4' },
+];
+
 export function ThemeCustomizer() {
   const { theme, colorTheme, setColorTheme, toggleTheme } = useTheme();
+  const { currentUser, updateUser } = useUser();
+  const queryClient = useQueryClient();
+
+  const handleAvatarSelect = async (url: string) => {
+    if (!currentUser) return;
+    try {
+      await updateUser(currentUser.id, { avatar: url });
+      queryClient.invalidateQueries({ queryKey: ['currentUserProfile', currentUser.id] });
+      toast.success('Avatar actualizado exitosamente.');
+    } catch (error) {
+      toast.error('No se pudo actualizar el avatar.');
+      console.error('Error updating avatar:', error);
+    }
+  };
 
   return (
     <Card className="max-w-2xl">
@@ -77,6 +104,31 @@ export function ThemeCustomizer() {
             ))}
           </div>
         </div>
+
+        {/* Avatar Selection - only for students and teachers */}
+        {(currentUser?.role === 'student' || currentUser?.role === 'teacher') && (
+          <div>
+            <h3 className="text-lg font-medium mb-3">Avatar para la Plataforma</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Elige un avatar que te representará en la plataforma.
+            </p>
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+              {avatarOptions.map((avatar) => (
+                <button
+                  key={avatar.url}
+                  onClick={() => handleAvatarSelect(avatar.url)}
+                  className={`flex flex-col items-center gap-2 h-auto p-2 rounded-lg border-2 ${currentUser?.avatar === avatar.url ? 'border-primary' : 'border-transparent'} hover:border-primary/50 transition-all`}
+                  title={avatar.name}
+                >
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={avatar.url} alt={avatar.name} />
+                    <AvatarFallback>{avatar.name.substring(0,2)}</AvatarFallback>
+                  </Avatar>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Preview */}
         <div>
