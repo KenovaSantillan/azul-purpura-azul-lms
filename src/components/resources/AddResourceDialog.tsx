@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -25,7 +24,21 @@ const fetchGroups = async (): Promise<Group[]> => {
         console.error("Error fetching groups:", error);
         throw error;
     }
-    return data || [];
+    
+    // Transform the Supabase data to match the Group interface
+    return (data || []).map(group => ({
+        id: group.id,
+        name: group.name,
+        grade: group.grade,
+        letter: group.letter,
+        specialty: group.specialty,
+        shift: group.shift,
+        teacherId: group.teacher_id || '',
+        tutorId: group.tutor_id || undefined,
+        students: [], // Empty array for now, as we don't need students for this dialog
+        createdAt: new Date(group.created_at || ''),
+        status: group.status
+    }));
 };
 
 const AddResourceDialog = ({ children }: AddResourceDialogProps) => {
@@ -41,7 +54,7 @@ const AddResourceDialog = ({ children }: AddResourceDialogProps) => {
     const [content, setContent] = useState(''); // for link URL
     const [groupId, setGroupId] = useState<string>('');
 
-    const teacherGroups = groups.filter(g => g.teacher_id === currentUser?.id);
+    const teacherGroups = groups.filter(g => g.teacherId === currentUser?.id);
 
     const resetForm = () => {
         setTitle('');
