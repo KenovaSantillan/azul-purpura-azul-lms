@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Group, Specialty } from '@/types/lms';
 import { useLMS } from '@/contexts/LMSContext';
+import { useUser } from '@/contexts/UserContext';
 import { Users, User as UserIcon, Pencil, Copy, MessageSquare, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -28,7 +29,8 @@ const getSpecialtyColor = (specialty: Specialty) => {
 };
 
 export default function GroupCard({ group, index, isSelected, onSelect, onEnterClassroom, onEdit, onDelete }: GroupCardProps) {
-    const { users, copyGroup } = useLMS();
+    const { copyGroup } = useLMS();
+    const { users } = useUser();
 
     const handleEditClick = (e: React.MouseEvent) => {
       e.stopPropagation();

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useLMS } from '@/contexts/LMSContext';
+import { useUser } from '@/contexts/UserContext';
 import { Grade, Letter, Specialty, Shift, Group } from '@/types/lms';
 import GroupForm from './GroupForm';
 import { Circle } from 'lucide-react';
@@ -25,7 +26,8 @@ const initialGroupState = {
 };
 
 export default function CreateGroupDialog({ isCreateOpen, setIsCreateOpen }: CreateGroupDialogProps) {
-  const { users, addGroup } = useLMS();
+  const { addGroup } = useLMS();
+  const { users } = useUser();
   const [step, setStep] = useState(1);
   const [createdGroup, setCreatedGroup] = useState<Group | null>(null);
 

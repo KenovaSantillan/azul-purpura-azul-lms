@@ -14,12 +14,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useLMS } from "@/contexts/LMSContext"
+import { useUser } from "@/contexts/UserContext"
 import { supabase } from "@/integrations/supabase/client"
 import { LogOut, User } from "lucide-react"
 
 export function UserNav() {
-  const { currentUser } = useLMS()
+  const { currentUser } = useUser()
 
   const handleLogout = async () => {
     await supabase.auth.signOut()

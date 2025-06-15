@@ -1,12 +1,15 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLMS } from '@/contexts/LMSContext';
+import { useUser } from '@/contexts/UserContext';
 import { Users, List, User, Folder, CheckCircle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 export default function Dashboard() {
-  const { groups, users, tasks, announcements, currentUser } = useLMS();
+  const { groups, tasks, announcements } = useLMS();
+  const { users, currentUser } = useUser();
 
   const getInitials = (name: string) => {
     if (!name) return "";

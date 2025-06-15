@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useLMS } from '@/contexts/LMSContext';
+import { useUser } from '@/contexts/UserContext';
 import { User } from '@/types/lms';
 import { toast } from 'sonner';
 import { FileUp } from 'lucide-react';
@@ -14,7 +15,8 @@ interface AddStudentsFormProps {
 }
 
 export default function AddStudentsForm({ groupId, onFinished }: AddStudentsFormProps) {
-  const { bulkAddUsers, addUsersToGroup } = useLMS();
+  const { addUsersToGroup } = useLMS();
+  const { bulkAddUsers } = useUser();
   const [studentList, setStudentList] = useState('');
 
   const handleAddStudents = () => {

@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useLMS } from '@/contexts/LMSContext';
+import { useUser } from '@/contexts/UserContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -24,7 +25,8 @@ import {
 
 
 const Announcements = () => {
-  const { announcements, users, currentUser, addAnnouncement, updateAnnouncement, deleteAnnouncement } = useLMS();
+  const { announcements, addAnnouncement, updateAnnouncement, deleteAnnouncement } = useLMS();
+  const { users, currentUser } = useUser();
   const { toast } = useToast();
 
   const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');

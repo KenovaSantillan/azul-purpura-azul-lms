@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import GroupForm from './GroupForm';
 import { useLMS } from '@/contexts/LMSContext';
+import { useUser } from '@/contexts/UserContext';
 import { Group } from '@/types/lms';
 import { toast } from 'sonner';
 
@@ -24,7 +25,8 @@ const initialGroupState = {
 };
 
 export default function EditGroupDialog({ group, isOpen, onOpenChange }: EditGroupDialogProps) {
-    const { users, updateGroup } = useLMS();
+    const { updateGroup } = useLMS();
+    const { users } = useUser();
     const [editedGroup, setEditedGroup] = useState<any>(initialGroupState);
 
     useEffect(() => {

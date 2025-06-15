@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useLMS } from '@/contexts/LMSContext';
+import { useUser } from '@/contexts/UserContext';
 import { GroupChatMessage } from '@/types/lms';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -18,7 +20,8 @@ const GroupChat: React.FC<GroupChatProps> = ({ groupId }) => {
   const [messages, setMessages] = useState<GroupChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const { currentUser, sendGroupChatMessage } = useLMS();
+  const { sendGroupChatMessage } = useLMS();
+  const { currentUser } = useUser();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

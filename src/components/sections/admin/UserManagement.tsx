@@ -1,5 +1,7 @@
+
 import React, { useMemo, useState } from 'react';
 import { useLMS } from '@/contexts/LMSContext';
+import { useUser } from '@/contexts/UserContext';
 import { User, UserRole } from '@/types/lms';
 import {
   Table,
@@ -23,7 +25,8 @@ import { CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const UserManagement = () => {
-  const { users, updateUser, groups, addUsersToGroup } = useLMS();
+  const { groups, addUsersToGroup } = useLMS();
+  const { users, updateUser } = useUser();
   const [selectedGroups, setSelectedGroups] = useState<Record<string, string>>({});
   const [selectedRoles, setSelectedRoles] = useState<Record<string, UserRole>>({});
 

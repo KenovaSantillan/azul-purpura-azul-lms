@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
-import { useLMS } from '@/contexts/LMSContext';
+import { useUser } from '@/contexts/UserContext';
 import { UserRole } from '@/types/lms';
 
 const menuConfig: {
@@ -59,7 +59,7 @@ interface AppSidebarProps {
 
 export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) {
   const { theme, toggleTheme } = useTheme();
-  const { currentUser } = useLMS();
+  const { currentUser } = useUser();
 
   const menuGroups = !currentUser ? [] : menuConfig
     .map(group => ({
