@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Group, User, Task, Announcement, StudentProgress, Team, UserRole } from '@/types/lms';
+import { Group, User, Task, Announcement, StudentProgress, Team, UserRole, TaskSubmission } from '@/types/lms';
 import { useAuth } from './AuthContext';
 
 interface LMSContextType {
@@ -8,6 +8,7 @@ interface LMSContextType {
   tasks: Task[];
   announcements: Announcement[];
   teams: Team[];
+  taskSubmissions: TaskSubmission[];
   currentUser: User | null;
   addGroup: (group: Omit<Group, 'id' | 'createdAt'>) => void;
   updateGroup: (id: string, group: Partial<Group>) => void;
@@ -24,9 +25,23 @@ interface LMSContextType {
   createTeam: (team: Omit<Team, 'id'>) => void;
   updateTeam: (id: string, team: Partial<Team>) => void;
   getStudentProgress: (studentId: string, groupId: string) => StudentProgress | null;
+  addTaskSubmission: (submission: Omit<TaskSubmission, 'id' | 'createdAt' | 'submittedAt' | 'submissionHash'>) => void;
+  updateTaskSubmission: (id: string, submission: Partial<TaskSubmission>) => void;
 }
 
 const LMSContext = createContext<LMSContextType | undefined>(undefined);
+
+// A simple hashing function (not cryptographically secure, just for demonstration)
+const simpleHash = (text: string): string => {
+  if (!text) return '';
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    const char = text.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return hash.toString();
+};
 
 export function LMSProvider({ children }: { children: React.ReactNode }) {
   const [groups, setGroups] = useState<Group[]>([]);
@@ -34,6 +49,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
+  const [taskSubmissions, setTaskSubmissions] = useState<TaskSubmission[]>([]);
   
   const { user: authUser } = useAuth();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -110,6 +126,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
     setGroups(sampleGroups);
     setTasks(sampleTasks);
     setAnnouncements(sampleAnnouncements);
+    setTaskSubmissions([]);
   }, []);
 
   const addGroup = (group: Omit<Group, 'id' | 'createdAt'>) => {
@@ -200,6 +217,41 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
     setTeams(prev => prev.map(t => t.id === id ? { ...t, ...team } : t));
   };
 
+  const addTaskSubmission = (submission: Omit<TaskSubmission, 'id' | 'createdAt' | 'submittedAt' | 'submissionHash'>) => {
+    const submissionHash = submission.content ? simpleHash(submission.content) : undefined;
+    
+    const newSubmission: TaskSubmission = {
+      ...submission,
+      id: Date.now().toString(),
+      createdAt: new Date(),
+      submittedAt: new Date(),
+      submissionHash,
+    };
+    
+    // Plagiarism check
+    if (submissionHash) {
+      const existingSubmission = taskSubmissions.find(
+        s => s.taskId === submission.taskId && s.submissionHash === submissionHash && s.studentId !== submission.studentId
+      );
+      if (existingSubmission) {
+        // Mark task as plagiarized for both submissions
+        updateTask(submission.taskId, { status: 'plagiarized' });
+        console.warn(`Plagiarism detected for task ${submission.taskId}`);
+      }
+    }
+    
+    setTaskSubmissions(prev => [...prev, newSubmission]);
+    
+    const task = tasks.find(t => t.id === submission.taskId);
+    if (task && task.status !== 'plagiarized') {
+      updateTask(submission.taskId, { status: 'submitted' });
+    }
+  };
+
+  const updateTaskSubmission = (id: string, submission: Partial<TaskSubmission>) => {
+    setTaskSubmissions(prev => prev.map(s => s.id === id ? { ...s, ...submission } : s));
+  };
+
   const getStudentProgress = (studentId: string, groupId: string): StudentProgress | null => {
     const groupTasks = tasks.filter(t => t.groupId === groupId && t.assignedTo.includes(studentId));
     const completedTasks = groupTasks.filter(t => t.status === 'completed').length;
@@ -221,6 +273,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
       tasks,
       announcements,
       teams,
+      taskSubmissions,
       currentUser,
       addGroup,
       updateGroup,
@@ -237,6 +290,8 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
       createTeam,
       updateTeam,
       getStudentProgress,
+      addTaskSubmission,
+      updateTaskSubmission,
     }}>
       {children}
     </LMSContext.Provider>

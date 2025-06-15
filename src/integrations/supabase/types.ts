@@ -193,9 +193,11 @@ export type Database = {
           id: string
           score: number | null
           student_id: string
+          submission_hash: string | null
           submitted_at: string
           task_id: string
           teacher_feedback: string | null
+          team_id: string | null
         }
         Insert: {
           attachments?: Json | null
@@ -204,9 +206,11 @@ export type Database = {
           id?: string
           score?: number | null
           student_id: string
+          submission_hash?: string | null
           submitted_at?: string
           task_id: string
           teacher_feedback?: string | null
+          team_id?: string | null
         }
         Update: {
           attachments?: Json | null
@@ -215,9 +219,11 @@ export type Database = {
           id?: string
           score?: number | null
           student_id?: string
+          submission_hash?: string | null
           submitted_at?: string
           task_id?: string
           teacher_feedback?: string | null
+          team_id?: string | null
         }
         Relationships: [
           {
@@ -232,6 +238,13 @@ export type Database = {
             columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_submissions_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
         ]
@@ -293,6 +306,68 @@ export type Database = {
           },
         ]
       }
+      team_members: {
+        Row: {
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          group_id: string
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          group_id: string
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          group_id?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -328,6 +403,7 @@ export type Database = {
         | "completed"
         | "submitted"
         | "graded"
+        | "plagiarized"
       task_type: "collective" | "group" | "individual"
     }
     CompositeTypes: {
@@ -461,6 +537,7 @@ export const Constants = {
         "completed",
         "submitted",
         "graded",
+        "plagiarized",
       ],
       task_type: ["collective", "group", "individual"],
     },

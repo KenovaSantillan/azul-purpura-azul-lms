@@ -37,7 +37,7 @@ export interface Task {
   groupId: string;
   assignedTo: string[]; // Student IDs
   dueDate: Date;
-  status: 'pending' | 'in-progress' | 'completed' | 'submitted' | 'graded';
+  status: 'pending' | 'in-progress' | 'completed' | 'submitted' | 'graded' | 'plagiarized';
   createdBy: string;
   createdAt: Date;
   max_score?: number;
@@ -80,9 +80,11 @@ export interface TaskSubmission {
   id: string;
   taskId: string;
   studentId: string;
+  teamId?: string;
   submittedAt: Date;
   content?: string;
   attachments?: Attachment[];
+  submissionHash?: string;
   score?: number;
   teacherFeedback?: string;
   createdAt: Date;
