@@ -191,39 +191,42 @@ export type Database = {
           content: string | null
           created_at: string | null
           id: string
-          score: number | null
+          score_details: Json | null
           student_id: string
           submission_hash: string | null
           submitted_at: string
           task_id: string
           teacher_feedback: string | null
           team_id: string | null
+          total_score: number | null
         }
         Insert: {
           attachments?: Json | null
           content?: string | null
           created_at?: string | null
           id?: string
-          score?: number | null
+          score_details?: Json | null
           student_id: string
           submission_hash?: string | null
           submitted_at?: string
           task_id: string
           teacher_feedback?: string | null
           team_id?: string | null
+          total_score?: number | null
         }
         Update: {
           attachments?: Json | null
           content?: string | null
           created_at?: string | null
           id?: string
-          score?: number | null
+          score_details?: Json | null
           student_id?: string
           submission_hash?: string | null
           submitted_at?: string
           task_id?: string
           teacher_feedback?: string | null
           team_id?: string | null
+          total_score?: number | null
         }
         Relationships: [
           {
@@ -260,6 +263,7 @@ export type Database = {
           id: string
           max_score: number | null
           rubric: string | null
+          rubric_structured: Json | null
           status: Database["public"]["Enums"]["task_status"]
           title: string
           type: Database["public"]["Enums"]["task_type"]
@@ -274,6 +278,7 @@ export type Database = {
           id?: string
           max_score?: number | null
           rubric?: string | null
+          rubric_structured?: Json | null
           status?: Database["public"]["Enums"]["task_status"]
           title: string
           type: Database["public"]["Enums"]["task_type"]
@@ -288,6 +293,7 @@ export type Database = {
           id?: string
           max_score?: number | null
           rubric?: string | null
+          rubric_structured?: Json | null
           status?: Database["public"]["Enums"]["task_status"]
           title?: string
           type?: Database["public"]["Enums"]["task_type"]

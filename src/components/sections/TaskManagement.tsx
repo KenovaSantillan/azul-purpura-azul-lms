@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useLMS } from '@/contexts/LMSContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,10 +25,10 @@ const TaskManagement = () => {
     setIsLoading(taskId);
     const task = tasks.find(t => t.id === taskId);
 
-    if (!task || !task.rubric) {
+    if (!task || !task.rubric_structured) {
       toast({
         title: 'Error',
-        description: 'La tarea no tiene una rúbrica para la evaluación.',
+        description: 'La tarea no tiene una rúbrica estructurada para la evaluación.',
         variant: 'destructive',
       });
       setIsLoading(null);
@@ -50,26 +49,53 @@ const TaskManagement = () => {
     `;
 
     try {
-      const { data, error } = await supabase.functions.invoke('grade-submission', {
+      const { data, error } = await supabase.functions.invoke('grade-submission-v2', {
         body: {
-          rubric: task.rubric,
+          rubric_structured: task.rubric_structured,
           submissionContent: mockSubmissionContent,
         },
       });
 
       if (error) throw error;
       
-      const { score, feedback } = data;
+      const { total_score, feedback, score_details } = data;
+      
+      const renderScoreDetails = (details: Record<string, number>) => {
+          const rubric = task.rubric_structured as {id: string, description: string, points: number}[];
+          if (!rubric) return null;
+
+          return (
+            <ul className="list-disc pl-5 space-y-1">
+              {Object.entries(details).map(([critId, score]) => {
+                const criterion = rubric.find(c => c.id === critId);
+                return (
+                  <li key={critId}>
+                    <span className="font-medium">{criterion?.description || critId}:</span> {score}/{criterion?.points}
+                  </li>
+                );
+              })}
+            </ul>
+          );
+        };
 
       toast({
         title: `Evaluación para "${task.title}" completada`,
         description: (
-          <div className="mt-2 p-2 rounded-md bg-accent">
-            <p><strong>Puntuación:</strong> {score}/100</p>
-            <p className="mt-1"><strong>Feedback:</strong> {feedback}</p>
+          <div className="mt-2 w-full max-w-full">
+            <div className="p-3 rounded-md bg-accent text-accent-foreground text-sm space-y-2">
+                <p><strong className="text-base">Puntuación Total: {total_score}/100</strong></p>
+                <div>
+                    <p className="font-semibold mb-1">Detalles de Calificación:</p>
+                    {renderScoreDetails(score_details)}
+                </div>
+                <div className="pt-1">
+                    <p className="font-semibold mb-1">Feedback General:</p>
+                    <p className="text-sm">{feedback}</p>
+                </div>
+            </div>
           </div>
         ),
-        duration: 9000,
+        duration: 20000,
       });
 
     } catch (error: any) {
@@ -112,7 +138,7 @@ const TaskManagement = () => {
                 </AlertDialog>
               )}
             </div>
-            <Button onClick={() => handleGrade(task.id)} disabled={isLoading === task.id || !task.rubric} size="sm">
+            <Button onClick={() => handleGrade(task.id)} disabled={isLoading === task.id || !task.rubric_structured} size="sm">
               {isLoading === task.id ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (

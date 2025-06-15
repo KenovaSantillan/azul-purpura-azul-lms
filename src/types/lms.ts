@@ -42,7 +42,8 @@ export interface Task {
   createdAt: Date;
   max_score?: number;
   allow_late_submissions?: boolean;
-  rubric?: string;
+  rubric?: string | null;
+  rubric_structured?: any;
 }
 
 export interface Announcement {
@@ -86,7 +87,8 @@ export interface TaskSubmission {
   content?: string;
   attachments?: Attachment[];
   submissionHash?: string;
-  score?: number;
+  total_score?: number;
+  score_details?: any;
   teacherFeedback?: string;
   createdAt: Date;
 }

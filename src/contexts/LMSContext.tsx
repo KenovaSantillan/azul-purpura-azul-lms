@@ -113,6 +113,12 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
           - **Responsividad (20%)**: La página se adapta correctamente a tamaños de pantalla de escritorio y móvil.
           - **Creatividad y Originalidad (10%)**: El diseño es único y creativo.
         `.trim(),
+        rubric_structured: [
+          { id: 'html_structure', description: 'Estructura HTML', points: 30 },
+          { id: 'css_styles', description: 'Estilos CSS', points: 40 },
+          { id: 'responsiveness', description: 'Responsividad', points: 20 },
+          { id: 'creativity', description: 'Creatividad y Originalidad', points: 10 },
+        ],
       }
     ];
 
