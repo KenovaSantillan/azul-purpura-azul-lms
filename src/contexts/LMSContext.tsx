@@ -3,7 +3,7 @@ import { Group, User, Task, Announcement, StudentProgress, Team, TaskSubmission,
 import { useAuth } from './AuthContext';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { User as AuthUser } from '@supabase/supabase-js';
+import { User as AuthUser, RealtimeChannel } from '@supabase/supabase-js';
 
 interface LMSContextType {
   groups: Group[];
@@ -92,12 +92,56 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
       setLoadingCurrentUser(false);
     };
 
+    let channel: RealtimeChannel | undefined;
+
     if (authUser) {
       fetchUserProfile(authUser);
+      
+      channel = supabase.channel(`profile-changes-for-${authUser.id}`)
+        .on(
+          'postgres_changes',
+          { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${authUser.id}` },
+          (payload) => {
+            console.log('User profile updated via realtime:', payload);
+            const newProfile = payload.new as {
+              id: string;
+              first_name: string | null;
+              last_name: string | null;
+              email: string | null;
+              role: UserRole;
+              avatar_url: string | null;
+              status: 'pending' | 'active' | 'inactive';
+            };
+            
+            const updatedUser: User = {
+              id: newProfile.id,
+              name: `${newProfile.first_name || ''} ${newProfile.last_name || ''}`.trim(),
+              email: newProfile.email!,
+              role: newProfile.role,
+              avatar: newProfile.avatar_url,
+              status: newProfile.status,
+            };
+
+            setCurrentUser(prevCurrentUser => {
+                if (JSON.stringify(prevCurrentUser) !== JSON.stringify(updatedUser)) {
+                    toast.info('Tu perfil ha sido actualizado.');
+                }
+                return updatedUser;
+            });
+          }
+        )
+        .subscribe();
+
     } else {
       setCurrentUser(null);
       setLoadingCurrentUser(false);
     }
+    
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, [authUser]);
 
   // Initialize with data
