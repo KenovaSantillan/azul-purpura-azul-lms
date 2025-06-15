@@ -89,6 +89,8 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
         status: 'pending',
         createdBy: '1',
         createdAt: new Date(),
+        max_score: 100,
+        allow_late_submissions: true,
       }
     ];
 

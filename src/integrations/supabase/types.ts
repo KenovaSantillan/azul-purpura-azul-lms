@@ -185,36 +185,93 @@ export type Database = {
           },
         ]
       }
+      task_submissions: {
+        Row: {
+          attachments: Json | null
+          content: string | null
+          created_at: string | null
+          id: string
+          score: number | null
+          student_id: string
+          submitted_at: string
+          task_id: string
+          teacher_feedback: string | null
+        }
+        Insert: {
+          attachments?: Json | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          score?: number | null
+          student_id: string
+          submitted_at?: string
+          task_id: string
+          teacher_feedback?: string | null
+        }
+        Update: {
+          attachments?: Json | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          score?: number | null
+          student_id?: string
+          submitted_at?: string
+          task_id?: string
+          teacher_feedback?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_submissions_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_submissions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
+          allow_late_submissions: boolean
           created_at: string | null
           created_by: string
           description: string | null
           due_date: string | null
           group_id: string
           id: string
+          max_score: number | null
           status: Database["public"]["Enums"]["task_status"]
           title: string
           type: Database["public"]["Enums"]["task_type"]
         }
         Insert: {
+          allow_late_submissions?: boolean
           created_at?: string | null
           created_by: string
           description?: string | null
           due_date?: string | null
           group_id: string
           id?: string
+          max_score?: number | null
           status?: Database["public"]["Enums"]["task_status"]
           title: string
           type: Database["public"]["Enums"]["task_type"]
         }
         Update: {
+          allow_late_submissions?: boolean
           created_at?: string | null
           created_by?: string
           description?: string | null
           due_date?: string | null
           group_id?: string
           id?: string
+          max_score?: number | null
           status?: Database["public"]["Enums"]["task_status"]
           title?: string
           type?: Database["public"]["Enums"]["task_type"]
@@ -265,7 +322,12 @@ export type Database = {
         | "Programación"
         | "Contabilidad"
         | "Construcción"
-      task_status: "pending" | "in-progress" | "completed"
+      task_status:
+        | "pending"
+        | "in-progress"
+        | "completed"
+        | "submitted"
+        | "graded"
       task_type: "collective" | "group" | "individual"
     }
     CompositeTypes: {
@@ -393,7 +455,13 @@ export const Constants = {
         "Contabilidad",
         "Construcción",
       ],
-      task_status: ["pending", "in-progress", "completed"],
+      task_status: [
+        "pending",
+        "in-progress",
+        "completed",
+        "submitted",
+        "graded",
+      ],
       task_type: ["collective", "group", "individual"],
     },
   },

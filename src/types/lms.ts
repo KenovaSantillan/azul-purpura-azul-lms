@@ -1,4 +1,3 @@
-
 export type Grade = '1o' | '2o' | '3o' | '4o' | '5o' | '6o';
 export type Letter = 'A' | 'B' | 'C' | 'D' | 'E';
 export type Specialty = 'Servicios de Hospedaje' | 'Programación' | 'Contabilidad' | 'Construcción';
@@ -38,9 +37,11 @@ export interface Task {
   groupId: string;
   assignedTo: string[]; // Student IDs
   dueDate: Date;
-  status: 'pending' | 'in-progress' | 'completed';
+  status: 'pending' | 'in-progress' | 'completed' | 'submitted' | 'graded';
   createdBy: string;
   createdAt: Date;
+  max_score?: number;
+  allow_late_submissions?: boolean;
 }
 
 export interface Announcement {
@@ -68,4 +69,21 @@ export interface Team {
   groupId: string;
   members: User[];
   color?: string;
+}
+
+export interface Attachment {
+  fileName: string;
+  url: string;
+}
+
+export interface TaskSubmission {
+  id: string;
+  taskId: string;
+  studentId: string;
+  submittedAt: Date;
+  content?: string;
+  attachments?: Attachment[];
+  score?: number;
+  teacherFeedback?: string;
+  createdAt: Date;
 }
