@@ -131,6 +131,31 @@
     --primary: 189 94% 43%;
     --sidebar-primary: 189 94% 43%;
   }
+
+  .theme-slate {
+    --primary: 215 14% 47%;
+    --sidebar-primary: 215 14% 47%;
+  }
+  
+  .theme-lime {
+    --primary: 80 78% 44%;
+    --sidebar-primary: 80 78% 44%;
+  }
+  
+  .theme-violet {
+    --primary: 255 91% 66%;
+    --sidebar-primary: 255 91% 66%;
+  }
+  
+  .theme-fuchsia {
+    --primary: 291 84% 60%;
+    --sidebar-primary: 291 84% 60%;
+  }
+  
+  .theme-rose {
+    --primary: 351 90% 60%;
+    --sidebar-primary: 351 90% 60%;
+  }
 }
 
 @layer base {

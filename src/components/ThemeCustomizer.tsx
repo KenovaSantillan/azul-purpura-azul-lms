@@ -15,6 +15,11 @@ const colorThemes: { name: string; value: ColorTheme; color: string }[] = [
   { name: 'Verde Azulado', value: 'teal', color: '#14b8a6' },
   { name: 'Amarillo', value: 'yellow', color: '#eab308' },
   { name: 'Cian', value: 'cyan', color: '#06b6d4' },
+  { name: 'Pizarra', value: 'slate', color: '#64748b' },
+  { name: 'Lima', value: 'lime', color: '#84cc16' },
+  { name: 'Violeta', value: 'violet', color: '#8b5cf6' },
+  { name: 'Fucsia', value: 'fuchsia', color: '#d946ef' },
+  { name: 'Rosado', value: 'rose', color: '#f43f5e' },
 ];
 
 export function ThemeCustomizer() {

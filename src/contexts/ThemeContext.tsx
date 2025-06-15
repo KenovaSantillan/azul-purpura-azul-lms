@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 export type Theme = 'light' | 'dark';
-export type ColorTheme = 'default' | 'blue' | 'green' | 'orange' | 'red' | 'pink' | 'indigo' | 'teal' | 'yellow' | 'cyan';
+export type ColorTheme = 'default' | 'blue' | 'green' | 'orange' | 'red' | 'pink' | 'indigo' | 'teal' | 'yellow' | 'cyan' | 'slate' | 'lime' | 'violet' | 'fuchsia' | 'rose';
 
 interface ThemeContextType {
   theme: Theme;
@@ -40,7 +40,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const root = window.document.documentElement;
     // Remove all theme classes
-    root.classList.remove('theme-blue', 'theme-green', 'theme-orange', 'theme-red', 'theme-pink', 'theme-indigo', 'theme-teal', 'theme-yellow', 'theme-cyan');
+    root.classList.remove('theme-blue', 'theme-green', 'theme-orange', 'theme-red', 'theme-pink', 'theme-indigo', 'theme-teal', 'theme-yellow', 'theme-cyan', 'theme-slate', 'theme-lime', 'theme-violet', 'theme-fuchsia', 'theme-rose');
     
     if (colorTheme !== 'default') {
       root.classList.add(`theme-${colorTheme}`);
