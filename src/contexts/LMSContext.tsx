@@ -200,6 +200,34 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
           { id: 'responsiveness', description: 'Responsividad', points: 20 },
           { id: 'creativity', description: 'Creatividad y Originalidad', points: 10 },
         ],
+      },
+      {
+        id: '2',
+        title: 'Investigación sobre Frameworks',
+        description: 'Realizar un cuadro comparativo de React, Vue y Angular.',
+        type: 'individual',
+        groupId: '1',
+        assignedTo: usersForSetup.filter(u => u.role === 'student').map(s => s.id),
+        dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+        status: 'pending',
+        createdBy: '1',
+        createdAt: new Date(),
+        max_score: 100,
+        allow_late_submissions: true,
+      },
+      {
+        id: '3',
+        title: 'Examen Parcial 1',
+        description: 'Examen sobre los fundamentos de JavaScript.',
+        type: 'individual',
+        groupId: '1',
+        assignedTo: usersForSetup.filter(u => u.role === 'student').map(s => s.id),
+        dueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+        status: 'completed',
+        createdBy: '1',
+        createdAt: new Date(),
+        max_score: 100,
+        allow_late_submissions: false,
       }
     ];
 
@@ -218,7 +246,38 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
     setGroups(sampleGroups);
     setTasks(sampleTasks);
     setAnnouncements(sampleAnnouncements);
-    setTaskSubmissions([]);
+    
+    const studentJuan = usersForSetup.find(u => u.email === 'juan@estudiante.edu');
+    const sampleSubmissions: TaskSubmission[] = [];
+
+    if (studentJuan) {
+      sampleSubmissions.push({
+        id: 'sub1',
+        taskId: '1',
+        studentId: studentJuan.id,
+        submittedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        grade: 90
+      });
+      sampleSubmissions.push({
+        id: 'sub2',
+        taskId: '2',
+        studentId: studentJuan.id,
+        submittedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        grade: 85
+      });
+      sampleSubmissions.push({
+        id: 'sub3',
+        taskId: '3',
+        studentId: studentJuan.id,
+        submittedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
+        grade: 92
+      });
+    }
+
+    setTaskSubmissions(sampleSubmissions);
   }, [currentUser, allUsersFromQuery]);
 
   const addGroup = (group: Omit<Group, 'id' | 'createdAt'>): Group => {

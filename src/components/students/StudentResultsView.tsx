@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,17 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useLMS } from '@/contexts/LMSContext';
 import { Badge } from '@/components/ui/badge';
 
-// NOTA: Usamos datos de ejemplo para algunas métricas. Esto se puede expandir en el futuro.
-const mockResults = {
-  attendance: 95,
-  averageGrade: 88,
-  recentGrades: [
-    { task: 'Proyecto Final HTML/CSS', grade: 90 },
-    { task: 'Investigación sobre Frameworks', grade: 85 },
-    { task: 'Examen Parcial 1', grade: 92 },
-  ],
-};
-
 interface StudentResultsViewProps {
   student: User;
   group: Group;
@@ -25,9 +15,34 @@ interface StudentResultsViewProps {
 }
 
 const StudentResultsView = ({ student, group, onBack }: StudentResultsViewProps) => {
-  const { getStudentProgress } = useLMS();
+  const { getStudentProgress, tasks, taskSubmissions } = useLMS();
   
   const progress = getStudentProgress(student.id, group.id);
+
+  const studentSubmissions = taskSubmissions.filter(
+    sub => sub.studentId === student.id && typeof sub.grade === 'number'
+  );
+
+  const averageGrade =
+    studentSubmissions.length > 0
+      ? Math.round(studentSubmissions.reduce((acc, sub) => acc + (sub.grade ?? 0), 0) / studentSubmissions.length)
+      : 0;
+
+  const recentGrades = studentSubmissions
+    .map(sub => {
+      const task = tasks.find(t => t.id === sub.taskId);
+      return {
+        task: task?.title ?? 'Tarea desconocida',
+        grade: sub.grade!,
+        submittedAt: sub.submittedAt,
+      };
+    })
+    .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
+    .slice(0, 3);
+  
+  const completionPercentage = progress && progress.totalTasks > 0
+    ? Math.round((progress.completedTasks / progress.totalTasks) * 100)
+    : 0;
 
   return (
     <div className="p-6 animate-fade-in space-y-6">
@@ -71,11 +86,11 @@ const StudentResultsView = ({ student, group, onBack }: StudentResultsViewProps)
             </CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="p-4 bg-muted rounded-lg text-center">
-                <p className="text-2xl font-bold">{mockResults.attendance}%</p>
-                <p className="text-sm text-muted-foreground">Asistencia</p>
+                <p className="text-2xl font-bold">{completionPercentage}%</p>
+                <p className="text-sm text-muted-foreground">Completado</p>
               </div>
               <div className="p-4 bg-muted rounded-lg text-center">
-                <p className="text-2xl font-bold">{mockResults.averageGrade}</p>
+                <p className="text-2xl font-bold">{averageGrade}</p>
                 <p className="text-sm text-muted-foreground">Promedio</p>
               </div>
               <div className="p-4 bg-muted rounded-lg text-center">
@@ -94,9 +109,9 @@ const StudentResultsView = ({ student, group, onBack }: StudentResultsViewProps)
               <CardTitle>Calificaciones Recientes</CardTitle>
             </CardHeader>
             <CardContent>
-              {mockResults.recentGrades.length > 0 ? (
+              {recentGrades.length > 0 ? (
                 <ul className="space-y-2">
-                  {mockResults.recentGrades.map((grade, index) => (
+                  {recentGrades.map((grade, index) => (
                     <li key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-muted">
                       <span>{grade.task}</span>
                       <span className="font-semibold">{grade.grade}/100</span>
