@@ -6,19 +6,33 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useLMS } from '@/contexts/LMSContext';
+import { useLMSResources } from '@/contexts/ResourceContext';
 import { useUser } from '@/contexts/UserContext';
 import { ResourceInput } from '@/hooks/useResourceActions';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Group } from '@/types/lms';
 
 interface AddResourceDialogProps {
     children: React.ReactNode;
 }
 
+const fetchGroups = async (): Promise<Group[]> => {
+    const { data, error } = await supabase.from('groups').select('*');
+    if (error) {
+        console.error("Error fetching groups:", error);
+        throw error;
+    }
+    return data || [];
+};
+
 const AddResourceDialog = ({ children }: AddResourceDialogProps) => {
-    const { addResource, isAdding, groups } = useLMS();
+    const { addResource, isAdding } = useLMSResources();
     const { currentUser } = useUser();
+    const { data: groups = [] } = useQuery({ queryKey: ['groups'], queryFn: fetchGroups });
+    
     const [open, setOpen] = useState(false);
     const [type, setType] = useState<'file' | 'link'>('link');
     const [file, setFile] = useState<File | null>(null);
@@ -27,7 +41,7 @@ const AddResourceDialog = ({ children }: AddResourceDialogProps) => {
     const [content, setContent] = useState(''); // for link URL
     const [groupId, setGroupId] = useState<string>('');
 
-    const teacherGroups = groups.filter(g => g.teacherId === currentUser?.id);
+    const teacherGroups = groups.filter(g => g.teacher_id === currentUser?.id);
 
     const resetForm = () => {
         setTitle('');
