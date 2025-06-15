@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Group, Specialty } from '@/types/lms';
 import { useLMS } from '@/contexts/LMSContext';
-import { Users, User as UserIcon, Pencil, Archive, ArchiveRestore, Copy, MessageSquare } from 'lucide-react';
+import { Users, User as UserIcon, Pencil, Copy, MessageSquare, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface GroupCardProps {
@@ -14,6 +13,8 @@ interface GroupCardProps {
     isSelected: boolean;
     onSelect: (id: string | null) => void;
     onEnterClassroom: (groupId: string) => void;
+    onEdit: (group: Group) => void;
+    onDelete: (group: Group) => void;
 }
 
 const getSpecialtyColor = (specialty: Specialty) => {
@@ -26,25 +27,17 @@ const getSpecialtyColor = (specialty: Specialty) => {
     return colors[specialty];
 };
 
-export default function GroupCard({ group, index, isSelected, onSelect, onEnterClassroom }: GroupCardProps) {
-    const { users, archiveGroup, restoreGroup, copyGroup } = useLMS();
+export default function GroupCard({ group, index, isSelected, onSelect, onEnterClassroom, onEdit, onDelete }: GroupCardProps) {
+    const { users, copyGroup } = useLMS();
 
     const handleEditClick = (e: React.MouseEvent) => {
       e.stopPropagation();
-      // Lógica para editar el grupo. Por ahora, una alerta.
-      alert(`Editando el grupo: ${group.name}`);
+      onEdit(group);
     };
 
-    const handleArchiveClick = (e: React.MouseEvent) => {
+    const handleDeleteClick = (e: React.MouseEvent) => {
       e.stopPropagation();
-      if (group.status === 'archived') {
-        restoreGroup(group.id);
-        toast.success(`Grupo "${group.name}" restaurado.`);
-      } else {
-        archiveGroup(group.id);
-        toast.success(`Grupo "${group.name}" archivado.`);
-      }
-      onSelect(null);
+      onDelete(group);
     };
 
     const handleCopyClick = (e: React.MouseEvent) => {
@@ -117,9 +110,8 @@ export default function GroupCard({ group, index, isSelected, onSelect, onEnterC
                             </Button>
                         </div>
                         <div className="flex gap-2">
-                            <Button size="sm" variant={group.status === 'archived' ? 'default' : 'destructive'} className="flex-1" onClick={handleArchiveClick}>
-                                {group.status === 'archived' ? <ArchiveRestore className="h-4 w-4 mr-2" /> : <Archive className="h-4 w-4 mr-2" />}
-                                {group.status === 'archived' ? 'Restaurar' : 'Archivar'}
+                            <Button size="sm" variant="destructive" className="flex-1" onClick={handleDeleteClick}>
+                                <Trash2 className="h-4 w-4 mr-2" /> Eliminar
                             </Button>
                         </div>
                     </div>

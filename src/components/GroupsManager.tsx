@@ -9,6 +9,9 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import { Group } from '@/types/lms';
+import EditGroupDialog from './groups/EditGroupDialog';
+import DeleteGroupConfirmationDialog from './groups/DeleteGroupConfirmationDialog';
 
 export default function GroupsManager() {
   const { groups } = useLMS();
@@ -16,6 +19,8 @@ export default function GroupsManager() {
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
   const [viewingChat, setViewingChat] = useState<string | null>(null);
+  const [groupToEdit, setGroupToEdit] = useState<Group | null>(null);
+  const [groupToDelete, setGroupToDelete] = useState<Group | null>(null);
 
   const activeGroups = groups.filter(g => g.status !== 'archived');
   const archivedGroups = groups.filter(g => g.status === 'archived');
@@ -73,6 +78,8 @@ export default function GroupsManager() {
               isSelected={selectedGroup === group.id}
               onSelect={setSelectedGroup} 
               onEnterClassroom={setViewingChat}
+              onEdit={setGroupToEdit}
+              onDelete={setGroupToDelete}
             />
           ))}
         </div>
@@ -88,6 +95,17 @@ export default function GroupsManager() {
           />
         )
       )}
+
+      <EditGroupDialog
+        group={groupToEdit}
+        isOpen={!!groupToEdit}
+        onOpenChange={(isOpen) => !isOpen && setGroupToEdit(null)}
+      />
+      <DeleteGroupConfirmationDialog
+        group={groupToDelete}
+        isOpen={!!groupToDelete}
+        onOpenChange={(isOpen) => !isOpen && setGroupToDelete(null)}
+      />
     </div>
   );
 }
