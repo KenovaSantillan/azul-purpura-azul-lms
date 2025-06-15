@@ -10,12 +10,30 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import NotificationCenter from './notifications/NotificationCenter';
 import Breadcrumbs from './navigation/Breadcrumbs';
 import AnalyticsDashboard from './analytics/AnalyticsDashboard';
-import { useLazyLoading } from '@/hooks/useLazyLoading';
+import { useLazyLoading, useViewportLazyLoading } from '@/hooks/useLazyLoading';
+import { useOptimizedCache } from '@/hooks/useOptimizedCache';
 
 export default function Dashboard() {
   const { groups, tasks, announcements } = useLMS();
   const { users, currentUser } = useUser();
-  const { isIntersecting: showAnalytics, elementRef: analyticsRef } = useLazyLoading();
+  const { isIntersecting: showAnalytics, elementRef: analyticsRef } = useViewportLazyLoading(0.2);
+  const { isIntersecting: showStats, elementRef: statsRef } = useLazyLoading({ threshold: 0.1, once: true });
+  const { prefetchData } = useOptimizedCache();
+
+  // Prefetch related data when user hovers over sections
+  const handleSectionHover = (section: string) => {
+    switch (section) {
+      case 'groups':
+        prefetchData(['groups'], async () => groups);
+        break;
+      case 'tasks':
+        prefetchData(['tasks'], async () => tasks);
+        break;
+      case 'announcements':
+        prefetchData(['announcements'], async () => announcements);
+        break;
+    }
+  };
 
   const getInitials = (name: string) => {
     if (!name) return "";
@@ -66,15 +84,11 @@ export default function Dashboard() {
     },
   ];
 
-  const breadcrumbItems = [
-    { label: 'Dashboard', href: '/' }
-  ];
-
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       {/* Navigation and Notifications */}
       <div className="flex items-center justify-between">
-        <Breadcrumbs items={breadcrumbItems} />
+        <Breadcrumbs showHome={false} maxItems={4} />
         <NotificationCenter />
       </div>
 
@@ -106,34 +120,42 @@ export default function Dashboard() {
         </Card>
       )}
 
-      {/* Enhanced Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <Card key={stat.title} className="hover:shadow-lg transition-all duration-300 hover:scale-105 animate-scale-in" style={{animationDelay: `${index * 100}ms`}}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-              <div className={`p-2 rounded-full ${stat.color} text-white`}>
-                <stat.icon className="h-4 w-4" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <div className="flex items-center justify-between mt-1">
-                <p className="text-xs text-muted-foreground">{stat.description}</p>
-                <div className="flex items-center gap-1">
-                  <TrendingUp className="h-3 w-3 text-green-500" />
-                  <span className="text-xs text-green-500 font-medium">{stat.trend}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      {/* Enhanced Statistics Cards - Lazy Loaded */}
+      <div ref={statsRef}>
+        {showStats && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {stats.map((stat, index) => (
+              <Card key={stat.title} className="hover:shadow-lg transition-all duration-300 hover:scale-105 animate-scale-in" style={{animationDelay: `${index * 100}ms`}}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                  <div className={`p-2 rounded-full ${stat.color} text-white`}>
+                    <stat.icon className="h-4 w-4" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stat.value}</div>
+                  <div className="flex items-center justify-between mt-1">
+                    <p className="text-xs text-muted-foreground">{stat.description}</p>
+                    <div className="flex items-center gap-1">
+                      <TrendingUp className="h-3 w-3 text-green-500" />
+                      <span className="text-xs text-green-500 font-medium">{stat.trend}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Recent Activity - Enhanced */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Groups */}
-        <Card className="animate-fade-in hover:shadow-md transition-shadow" style={{animationDelay: '400ms'}}>
+        <Card 
+          className="animate-fade-in hover:shadow-md transition-shadow" 
+          style={{animationDelay: '400ms'}}
+          onMouseEnter={() => handleSectionHover('groups')}
+        >
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />
@@ -164,7 +186,11 @@ export default function Dashboard() {
         </Card>
 
         {/* Recent Announcements - Enhanced */}
-        <Card className="animate-fade-in hover:shadow-md transition-shadow" style={{animationDelay: '500ms'}}>
+        <Card 
+          className="animate-fade-in hover:shadow-md transition-shadow" 
+          style={{animationDelay: '500ms'}}
+          onMouseEnter={() => handleSectionHover('announcements')}
+        >
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <List className="h-5 w-5" />
@@ -198,7 +224,11 @@ export default function Dashboard() {
         </Card>
         
         {/* Pending Tasks - Enhanced */}
-        <Card className="animate-fade-in hover:shadow-md transition-shadow" style={{animationDelay: '600ms'}}>
+        <Card 
+          className="animate-fade-in hover:shadow-md transition-shadow" 
+          style={{animationDelay: '600ms'}}
+          onMouseEnter={() => handleSectionHover('tasks')}
+        >
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5" />
