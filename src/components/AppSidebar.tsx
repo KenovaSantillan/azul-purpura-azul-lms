@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
+import { useLMS } from '@/contexts/LMSContext';
 
 const menuGroups = [
   {
@@ -50,6 +51,11 @@ interface AppSidebarProps {
 
 export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) {
   const { theme, toggleTheme } = useTheme();
+  const { currentUser } = useLMS();
+
+  const adminMenuItems = [
+    { title: 'Gestión de Usuarios', url: '#admin/users', icon: Users },
+  ];
 
   return (
     <Sidebar className="animate-slide-in-right">
@@ -82,6 +88,34 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
+        {currentUser?.role === 'admin' && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-lg font-bold text-primary mb-2 px-2 pt-2">
+              Administración
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {adminMenuItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={activeSection === item.url.replace('#', '')}
+                      className="hover:bg-accent transition-colors duration-200"
+                    >
+                      <button
+                        onClick={() => onSectionChange(item.url.replace('#', ''))}
+                        className="w-full flex items-center gap-3 p-3 rounded-lg"
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.title}</span>
+                      </button>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
       <SidebarFooter>
         <div className="p-4 space-y-2">

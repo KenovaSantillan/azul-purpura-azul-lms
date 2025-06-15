@@ -100,7 +100,7 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
     }
   }, [authUser]);
 
-  // Initialize with sample data
+  // Initialize with data
   useEffect(() => {
     const sampleUsers: User[] = [
       { id: '1', name: 'Prof. María González', email: 'maria@escuela.edu', role: 'teacher', status: 'active' },
@@ -109,7 +109,32 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
       { id: '4', name: 'Carlos López', email: 'carlos@estudiante.edu', role: 'student', status: 'inactive' },
       { id: '5', name: 'Tutor Rodríguez', email: 'tutor@escuela.edu', role: 'tutor', status: 'active' },
     ];
+    
+    const fetchAllUsers = async () => {
+      const { data, error } = await supabase.from('profiles').select('*');
+      if (error) {
+        toast.error('No se pudieron cargar los usuarios.');
+        console.error('Error fetching users:', error);
+        setUsers(sampleUsers); // fallback to sample
+      } else {
+        const allUsers: User[] = data.map(profile => ({
+          id: profile.id,
+          name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
+          email: profile.email!,
+          role: profile.role,
+          avatar: profile.avatar_url,
+          status: profile.status,
+        }));
+        setUsers(allUsers);
+      }
+    };
 
+    if (currentUser?.role === 'admin') {
+      fetchAllUsers();
+    } else {
+      setUsers(sampleUsers);
+    }
+    
     const sampleGroups: Group[] = [
       {
         id: '1',
@@ -167,12 +192,11 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
       }
     ];
 
-    setUsers(sampleUsers);
     setGroups(sampleGroups);
     setTasks(sampleTasks);
     setAnnouncements(sampleAnnouncements);
     setTaskSubmissions([]);
-  }, []);
+  }, [currentUser]);
 
   const addGroup = (group: Omit<Group, 'id' | 'createdAt'>) => {
     const newGroup: Group = {
@@ -226,8 +250,34 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
     setUsers(prev => [...prev, newUser]);
   };
 
-  const updateUser = (id: string, user: Partial<User>) => {
+  const updateUser = async (id: string, user: Partial<User>) => {
+    // optimistic update
     setUsers(prev => prev.map(u => u.id === id ? { ...u, ...user } : u));
+
+    const updatePayload: { status?: 'pending' | 'active' | 'inactive', role?: UserRole } = {};
+    if (user.status) {
+      updatePayload.status = user.status;
+    }
+    if (user.role) {
+      updatePayload.role = user.role;
+    }
+
+    if (Object.keys(updatePayload).length === 0) {
+      console.warn("updateUser called without any fields to update.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from('profiles')
+      .update(updatePayload)
+      .eq('id', id);
+
+    if (error) {
+      toast.error('Error al actualizar el usuario.');
+      console.error('Error updating user:', error);
+    } else {
+      toast.success('Usuario actualizado correctamente.');
+    }
   };
 
   const deleteUser = (id: string) => {

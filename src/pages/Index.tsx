@@ -16,6 +16,7 @@ const Announcements = lazy(() => import('@/components/sections/Announcements'));
 const ProgressTracking = lazy(() => import('@/components/sections/ProgressTracking'));
 const ThemeCustomizerSection = lazy(() => import('@/components/ThemeCustomizer').then(m => ({ default: m.ThemeCustomizer })));
 const Library = lazy(() => Promise.resolve({ default: () => <div className="p-6"><h1>Biblioteca de Recursos</h1><p>Próximamente disponible.</p></div> }));
+const AdminUserManagement = lazy(() => import('@/components/sections/admin/UserManagement'));
 
 
 const Index = () => {
@@ -41,6 +42,8 @@ const Index = () => {
         return <ThemeCustomizerSection />;
       case 'library':
         return <Library />;
+      case 'admin/users':
+        return <AdminUserManagement />;
       default:
         return <Dashboard />;
     }
