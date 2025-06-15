@@ -1,15 +1,15 @@
+
 import React, { createContext, useContext } from 'react';
 import { User } from '@/types/lms';
 import { useUserData } from '@/hooks/useUserData';
 
 interface UserContextType {
   users: User[];
+  loadingUsers: boolean;
   currentUser: User | null;
   loadingCurrentUser: boolean;
-  addUser: (user: Omit<User, 'id'>) => void;
   createUser: (userData: { email: string; role: 'student' | 'teacher' | 'tutor' | 'parent' | 'admin'; first_name: string; last_name: string; }) => Promise<User>;
   updateUser: (id: string, user: Partial<User>) => Promise<void>;
-  deleteUser: (id: string) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -17,8 +17,13 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const userData = useUserData();
 
+  const value = {
+    ...userData,
+    loadingUsers: (userData as any).loadingUsers || false,
+  }
+
   return (
-    <UserContext.Provider value={userData}>
+    <UserContext.Provider value={value}>
       {children}
     </UserContext.Provider>
   );

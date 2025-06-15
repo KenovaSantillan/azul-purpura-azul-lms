@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { User, UserRole } from '@/types/lms';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export function useUserActions(users: User[], setUsers: React.Dispatch<React.SetStateAction<User[]>>) {
+export function useUserActions() {
     const queryClient = useQueryClient();
 
     const createUserMutation = useMutation({
@@ -89,22 +88,17 @@ export function useUserActions(users: User[], setUsers: React.Dispatch<React.Set
         },
         onMutate: async (variables) => {
             await queryClient.cancelQueries({ queryKey: ['allUsers'] });
-            const previousUsersQuery = queryClient.getQueryData<User[]>(['allUsers']);
-            const previousUsersState = users;
+            const previousUsers = queryClient.getQueryData<User[]>(['allUsers']);
             
             const optimisticUpdate = (old?: User[]) => old?.map(u => u.id === variables.id ? { ...u, ...variables.user } : u);
 
             queryClient.setQueryData<User[]>(['allUsers'], optimisticUpdate);
-            setUsers(prev => optimisticUpdate(prev) || []);
             
-            return { previousUsersQuery, previousUsersState };
+            return { previousUsers };
         },
         onError: (err, variables, context: any) => {
-            if (context?.previousUsersQuery) {
-                queryClient.setQueryData(['allUsers'], context.previousUsersQuery);
-            }
-            if (context?.previousUsersState) {
-                setUsers(context.previousUsersState);
+            if (context?.previousUsers) {
+                queryClient.setQueryData(['allUsers'], context.previousUsers);
             }
             toast.error('Error al actualizar el usuario.');
             console.error('Error updating user:', err);
