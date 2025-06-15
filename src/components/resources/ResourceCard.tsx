@@ -1,5 +1,4 @@
 
-```typescript
 import React from 'react';
 import { Resource } from '@/types/lms';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -85,4 +84,3 @@ const ResourceCard = ({ resource }: { resource: Resource }) => {
 };
 
 export default ResourceCard;
-```

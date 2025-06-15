@@ -1,5 +1,4 @@
 
-```typescript
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Resource } from '@/types/lms';
@@ -52,7 +51,7 @@ export const useResourceActions = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['resources'] });
         },
-        onError: (error) => {
+        onError: (error: Error) => {
             toast.error(`Error al añadir el recurso: ${error.message}`);
         }
     });
@@ -80,7 +79,7 @@ export const useResourceActions = () => {
             queryClient.invalidateQueries({ queryKey: ['resources'] });
             toast.success('Recurso eliminado con éxito.');
         },
-        onError: (error) => {
+        onError: (error: Error) => {
             toast.error(`Error al eliminar el recurso: ${error.message}`);
         },
     });
@@ -92,4 +91,3 @@ export const useResourceActions = () => {
         isDeleting: deleteResourceMutation.isPending,
     };
 };
-```
