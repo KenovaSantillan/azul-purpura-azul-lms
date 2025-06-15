@@ -1,4 +1,5 @@
 
+```typescript
 import React, { useState, Suspense, lazy } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -14,7 +15,7 @@ const TaskManagement = lazy(() => import('@/components/sections/TaskManagement')
 const Announcements = lazy(() => import('@/components/sections/Announcements'));
 const ProgressTracking = lazy(() => import('@/components/sections/ProgressTracking'));
 const ThemeCustomizerSection = lazy(() => import('@/components/ThemeCustomizer').then(m => ({ default: m.ThemeCustomizer })));
-const Library = lazy(() => Promise.resolve({ default: () => <div className="p-6"><h1>Biblioteca de Recursos</h1><p>Próximamente disponible.</p></div> }));
+const Library = lazy(() => import('@/components/resources/Library'));
 const AdminUserManagement = lazy(() => import('@/components/sections/admin/UserManagement'));
 const Legal = lazy(() => import('@/components/sections/Legal'));
 
@@ -84,3 +85,4 @@ const Index = () => {
 };
 
 export default Index;
+```

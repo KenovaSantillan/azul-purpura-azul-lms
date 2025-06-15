@@ -4,6 +4,7 @@ export type Specialty = 'Servicios de Hospedaje' | 'Programación' | 'Contabilid
 export type Shift = 'Matutino' | 'Vespertino';
 export type TaskType = 'collective' | 'group' | 'individual';
 export type UserRole = 'student' | 'teacher' | 'tutor' | 'parent' | 'admin';
+export type ResourceType = 'file' | 'link';
 
 export interface User {
   id: string;
@@ -106,5 +107,23 @@ export interface GroupChatMessage {
     first_name: string | null;
     last_name: string | null;
     avatar_url: string | null;
+  } | null;
+}
+
+export interface Resource {
+  id: string;
+  title: string;
+  description?: string | null;
+  type: ResourceType;
+  content: string;
+  file_name?: string | null;
+  file_type?: string | null;
+  group_id?: string | null;
+  uploaded_by: string;
+  created_at: string;
+  updated_at: string;
+  profiles?: {
+    first_name: string | null;
+    last_name: string | null;
   } | null;
 }

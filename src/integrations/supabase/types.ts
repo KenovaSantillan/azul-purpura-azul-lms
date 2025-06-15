@@ -213,6 +213,63 @@ export type Database = {
         }
         Relationships: []
       }
+      resources: {
+        Row: {
+          content: string
+          created_at: string
+          description: string | null
+          file_name: string | null
+          file_type: string | null
+          group_id: string | null
+          id: string
+          title: string
+          type: Database["public"]["Enums"]["resource_type"]
+          updated_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          description?: string | null
+          file_name?: string | null
+          file_type?: string | null
+          group_id?: string | null
+          id?: string
+          title: string
+          type: Database["public"]["Enums"]["resource_type"]
+          updated_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          description?: string | null
+          file_name?: string | null
+          file_type?: string | null
+          group_id?: string | null
+          id?: string
+          title?: string
+          type?: Database["public"]["Enums"]["resource_type"]
+          updated_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resources_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resources_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_assignees: {
         Row: {
           task_id: string
@@ -459,6 +516,7 @@ export type Database = {
       grade: "1o" | "2o" | "3o" | "4o" | "5o" | "6o"
       group_status: "active" | "archived"
       letter: "A" | "B" | "C" | "D" | "E"
+      resource_type: "file" | "link"
       shift: "Matutino" | "Vespertino"
       specialty:
         | "Servicios de Hospedaje"
@@ -594,6 +652,7 @@ export const Constants = {
       grade: ["1o", "2o", "3o", "4o", "5o", "6o"],
       group_status: ["active", "archived"],
       letter: ["A", "B", "C", "D", "E"],
+      resource_type: ["file", "link"],
       shift: ["Matutino", "Vespertino"],
       specialty: [
         "Servicios de Hospedaje",
