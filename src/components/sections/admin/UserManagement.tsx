@@ -1,7 +1,6 @@
-
 import React, { useMemo, useState } from 'react';
 import { useLMS } from '@/contexts/LMSContext';
-import { User } from '@/types/lms';
+import { User, UserRole } from '@/types/lms';
 import {
   Table,
   TableBody,
@@ -26,6 +25,7 @@ import { toast } from 'sonner';
 const UserManagement = () => {
   const { users, updateUser, groups, addUsersToGroup } = useLMS();
   const [selectedGroups, setSelectedGroups] = useState<Record<string, string>>({});
+  const [selectedRoles, setSelectedRoles] = useState<Record<string, UserRole>>({});
 
   const pendingUsers = useMemo(() => users.filter(u => u.status === 'pending'), [users]);
   const otherUsers = useMemo(() => users.filter(u => u.status !== 'pending').sort((a, b) => (a.name || "").localeCompare(b.name || "")), [users]);
@@ -34,21 +34,27 @@ const UserManagement = () => {
     setSelectedGroups(prev => ({ ...prev, [userId]: groupId }));
   };
 
+  const handleRoleSelect = (userId: string, role: UserRole) => {
+    setSelectedRoles(prev => ({ ...prev, [userId]: role }));
+  };
+
   const handleApproveUser = (userId: string) => {
     const user = users.find(u => u.id === userId);
     if (!user) return;
 
-    if (user.role === 'student') {
+    const roleToAssign = selectedRoles[userId] || user.role;
+
+    if (roleToAssign === 'student') {
         const groupId = selectedGroups[userId];
         if (!groupId) {
             toast.error("Por favor, seleccione un grupo para el alumno antes de aprobarlo.");
             return;
         }
-        updateUser(userId, { status: 'active' });
+        updateUser(userId, { status: 'active', role: 'student' });
         addUsersToGroup(groupId, [userId]);
         toast.success("Alumno aprobado y asignado al grupo.");
     } else {
-        updateUser(userId, { status: 'active' });
+        updateUser(userId, { status: 'active', role: roleToAssign });
         toast.success("Usuario aprobado.");
     }
   };
@@ -92,7 +98,20 @@ const UserManagement = () => {
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell className="hidden md:table-cell">{user.email}</TableCell>
                   <TableCell className="hidden sm:table-cell">
-                    <Badge variant="outline">{user.role}</Badge>
+                    {showActions && user.status === 'pending' ? (
+                        <Select onValueChange={(value) => handleRoleSelect(user.id, value as UserRole)} defaultValue={user.role}>
+                          <SelectTrigger className="w-[120px]">
+                            <SelectValue placeholder="Asignar rol" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="student">Alumno</SelectItem>
+                            <SelectItem value="teacher">Docente</SelectItem>
+                            <SelectItem value="tutor">Tutor</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Badge variant="outline">{user.role}</Badge>
+                      )}
                   </TableCell>
                   <TableCell>
                     {user.role === 'student' ? (

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Users, User, Folder, List, User as UserIcon, Circle, Settings, BookOpen } from 'lucide-react';
 import {
@@ -14,29 +15,38 @@ import {
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { useLMS } from '@/contexts/LMSContext';
+import { UserRole } from '@/types/lms';
 
-const menuGroups = [
+const menuConfig: {
+  title: string;
+  items: {
+    title: string;
+    url: string;
+    icon: React.ElementType;
+    roles: UserRole[];
+  }[];
+}[] = [
   {
     title: 'Principal',
     items: [
-      { title: 'Dashboard', url: '#dashboard', icon: Circle },
-      { title: 'Grupos', url: '#groups', icon: Users },
-      { title: 'Estudiantes', url: '#students', icon: User },
-      { title: 'Tareas', url: '#tasks', icon: List },
-      { title: 'Tablón', url: '#announcements', icon: Folder },
-      { title: 'Progreso', url: '#progress', icon: UserIcon },
+      { title: 'Dashboard', url: '#dashboard', icon: Circle, roles: ['admin', 'teacher', 'student', 'tutor', 'parent'] },
+      { title: 'Grupos', url: '#groups', icon: Users, roles: ['admin', 'teacher'] },
+      { title: 'Estudiantes', url: '#students', icon: User, roles: ['admin', 'teacher'] },
+      { title: 'Tareas', url: '#tasks', icon: List, roles: ['admin', 'teacher', 'student'] },
+      { title: 'Tablón', url: '#announcements', icon: Folder, roles: ['admin', 'teacher', 'student', 'tutor', 'parent'] },
+      { title: 'Progreso', url: '#progress', icon: UserIcon, roles: ['admin', 'teacher', 'student'] },
     ],
   },
   {
     title: 'Configuración',
     items: [
-      { title: 'Personalización', url: '#customization', icon: Settings },
+      { title: 'Personalización', url: '#customization', icon: Settings, roles: ['admin', 'teacher', 'student', 'tutor', 'parent'] },
     ],
   },
   {
     title: 'Recursos',
     items: [
-      { title: 'Biblioteca', url: '#library', icon: BookOpen },
+      { title: 'Biblioteca', url: '#library', icon: BookOpen, roles: ['admin', 'teacher', 'student', 'tutor', 'parent'] },
     ]
   },
 ];
@@ -50,6 +60,13 @@ interface AppSidebarProps {
 export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) {
   const { theme, toggleTheme } = useTheme();
   const { currentUser } = useLMS();
+
+  const menuGroups = !currentUser ? [] : menuConfig
+    .map(group => ({
+      ...group,
+      items: group.items.filter(item => item.roles.includes(currentUser.role)),
+    }))
+    .filter(group => group.items.length > 0);
 
   const adminMenuItems = [
     { title: 'Gestión de Usuarios', url: '#admin/users', icon: Users },

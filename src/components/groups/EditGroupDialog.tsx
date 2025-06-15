@@ -68,7 +68,7 @@ export default function EditGroupDialog({ group, isOpen, onOpenChange }: EditGro
                     <DialogDescription>Modifica los detalles del grupo.</DialogDescription>
                 </DialogHeader>
                 <GroupForm newGroup={editedGroup} setNewGroup={setEditedGroup} teachers={teachers} tutors={tutors} />
-                <div className="flex justify-end gap-2">
+                <div className="flex flex-col sm:flex-row justify-end gap-2 pt-4">
                     <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
                     <Button onClick={handleSaveChanges} className="bg-lms-purple-500 hover:bg-lms-purple-600">Guardar Cambios</Button>
                 </div>
