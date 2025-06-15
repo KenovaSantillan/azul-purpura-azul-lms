@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useLMS } from '@/contexts/LMSContext';
+import { useLMSResources } from '@/contexts/ResourceContext';
 import { useUser } from '@/contexts/UserContext';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Search } from 'lucide-react';
@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Library = () => {
-    const { resources, loadingResources } = useLMS();
+    const { resources, loadingResources } = useLMSResources();
     const { currentUser } = useUser();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState('all');

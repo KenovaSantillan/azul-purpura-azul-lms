@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useLMS } from '@/contexts/LMSContext';
+import { useLMSResources } from '@/contexts/ResourceContext';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -25,7 +24,7 @@ type EditResourceFormValues = z.infer<typeof formSchema>;
 
 const EditResourceDialog = ({ children, resource }: { children: React.ReactNode, resource: Resource }) => {
     const [open, setOpen] = useState(false);
-    const { updateResource, isUpdating } = useLMS();
+    const { updateResource, isUpdating } = useLMSResources();
     
     const form = useForm<EditResourceFormValues>({
         resolver: zodResolver(formSchema),
@@ -67,6 +66,7 @@ const EditResourceDialog = ({ children, resource }: { children: React.ReactNode,
         }, {
             onSuccess: () => {
                 setOpen(false);
+                toast.success("Recurso actualizado con éxito.");
             }
         });
     };
@@ -151,7 +151,7 @@ const EditResourceDialog = ({ children, resource }: { children: React.ReactNode,
                                                 onChange={(e) => onChange(e.target.files)}
                                             />
                                         </FormControl>
-                                        {resource.file_name && !value && <p className="text-sm text-muted-foreground mt-2">Archivo actual: {resource.file_name}</p>}
+                                        {resource.file_name && !value?.[0] && <p className="text-sm text-muted-foreground mt-2">Archivo actual: {resource.file_name}</p>}
                                         <FormMessage />
                                     </FormItem>
                                 )}

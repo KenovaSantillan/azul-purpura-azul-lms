@@ -5,25 +5,29 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Link, File, Trash2, User, Calendar, Download, Edit } from 'lucide-react';
 import { useUser } from '@/contexts/UserContext';
-import { useLMS } from '@/contexts/LMSContext';
+import { useLMSResources } from '@/contexts/ResourceContext';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import EditResourceDialog from './EditResourceDialog';
-
-const SUPABASE_URL = "https://nezvfjxihrwuhkbufxkg.supabase.co";
+import { supabase } from '@/integrations/supabase/client';
 
 const ResourceCard = ({ resource }: { resource: Resource }) => {
     const { currentUser } = useUser();
-    const { deleteResource, isDeleting } = useLMS();
+    const { deleteResource, isDeleting } = useLMSResources();
 
     const canDelete = currentUser?.id === resource.uploaded_by || currentUser?.role === 'admin';
     const uploaderName = resource.profiles ? `${resource.profiles.first_name || ''} ${resource.profiles.last_name || ''}`.trim() : 'Desconocido';
 
     const handleDownload = () => {
-        if (resource.type === 'file') {
-            const url = `${SUPABASE_URL}/storage/v1/object/public/resource_files/${resource.content}`;
-            window.open(url, '_blank');
+        if (resource.type === 'file' && resource.content) {
+            const { data } = supabase.storage
+                .from('resource_files')
+                .getPublicUrl(resource.content);
+
+            if (data.publicUrl) {
+                window.open(data.publicUrl, '_blank');
+            }
         } else if (resource.type === 'link') {
             window.open(resource.content, '_blank');
         }
