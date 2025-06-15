@@ -10,6 +10,7 @@ import { useLMS } from '@/contexts/LMSContext';
 import { User } from '@/types/lms';
 import { AlertTutorDialog } from './AlertTutorDialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
 
 const chartConfig = {
   ponderacion: {

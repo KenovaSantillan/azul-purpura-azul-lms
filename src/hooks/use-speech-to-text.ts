@@ -12,7 +12,7 @@ export const useSpeechToText = ({ onResult }: SpeechToTextOptions) => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       console.warn('Speech recognition not supported in this browser.');
       return;
