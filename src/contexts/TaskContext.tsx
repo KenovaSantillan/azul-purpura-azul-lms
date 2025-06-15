@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Task, TaskSubmission, StudentProgress, User } from '@/types/lms';
 import { useUser } from './UserContext';
@@ -139,15 +138,26 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
 
   const getStudentProgress = (studentId: string, groupId: string): StudentProgress | null => {
     const groupTasks = tasks.filter(t => t.groupId === groupId && t.assignedTo.includes(studentId));
-    const completedTasks = groupTasks.filter(t => t.status === 'completed').length;
     
+    const studentSubmissionsForGroupTasks = taskSubmissions.filter(sub => 
+      sub.studentId === studentId && groupTasks.some(t => t.id === sub.taskId)
+    );
+
+    const completedTasks = studentSubmissionsForGroupTasks.length;
+
+    const gradedSubmissions = studentSubmissionsForGroupTasks.filter(sub => typeof sub.total_score === 'number');
+
+    const averageGrade = gradedSubmissions.length > 0
+        ? Math.round(gradedSubmissions.reduce((acc, sub) => acc + (sub.total_score ?? 0), 0) / gradedSubmissions.length)
+        : 0;
+        
     return {
       studentId,
       groupId,
-      completedTasks,
+      completedTasks: completedTasks,
       totalTasks: groupTasks.length,
-      grade: groupTasks.length > 0 ? (completedTasks / groupTasks.length) * 100 : 0,
-      lastActivity: new Date(),
+      grade: averageGrade,
+      lastActivity: new Date(), // This is still mock data, which is fine for now
     };
   };
 

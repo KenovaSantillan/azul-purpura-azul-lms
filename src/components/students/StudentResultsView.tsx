@@ -20,23 +20,18 @@ const StudentResultsView = ({ student, group, onBack }: StudentResultsViewProps)
   const progress = getStudentProgress(student.id, group.id);
 
   const studentSubmissions = useMemo(() => 
-    taskSubmissions.filter(sub => sub.studentId === student.id && typeof sub.total_score === 'number'),
+    taskSubmissions.filter(sub => sub.studentId === student.id),
     [taskSubmissions, student.id]
   );
 
-  const averageGrade = useMemo(() =>
-    studentSubmissions.length > 0
-      ? Math.round(studentSubmissions.reduce((acc, sub) => acc + (sub.total_score ?? 0), 0) / studentSubmissions.length)
-      : 0,
-    [studentSubmissions]
-  );
+  const averageGrade = progress?.grade ?? 0;
 
   const recentGrades = useMemo(() => studentSubmissions
     .map(sub => {
       const task = tasks.find(t => t.id === sub.taskId);
       return {
         task: task?.title ?? 'Tarea desconocida',
-        grade: sub.total_score!,
+        grade: sub.total_score,
         submittedAt: sub.submittedAt,
       };
     })
@@ -121,7 +116,7 @@ const StudentResultsView = ({ student, group, onBack }: StudentResultsViewProps)
                   {recentGrades.map((grade, index) => (
                     <li key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-muted">
                       <span>{grade.task}</span>
-                      <span className="font-semibold">{grade.grade}/100</span>
+                      <span className="font-semibold">{typeof grade.grade === 'number' ? `${grade.grade}/100` : 'Sin calificar'}</span>
                     </li>
                   ))}
                 </ul>
