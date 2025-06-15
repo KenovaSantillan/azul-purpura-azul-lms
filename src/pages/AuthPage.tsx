@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -90,7 +89,7 @@ export default function AuthPage() {
                     <Label htmlFor="login-password">Contraseña</Label>
                     <Input id="login-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                   </div>
-                  <Button type="submit" className="w-full bg-lms-purple-500 hover:bg-lms-purple-600" disabled={loading}>
+                  <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? 'Iniciando...' : 'Iniciar Sesión'}
                   </Button>
                 </form>
@@ -117,7 +116,7 @@ export default function AuthPage() {
                     <Label htmlFor="signup-password">Contraseña</Label>
                     <Input id="signup-password" type="password" placeholder="Mínimo 6 caracteres" value={password} onChange={(e) => setPassword(e.target.value)} required />
                   </div>
-                  <Button type="submit" className="w-full bg-lms-purple-500 hover:bg-lms-purple-600" disabled={loading}>
+                  <Button type="submit" className="w-full" disabled={loading}>
                      {loading ? 'Registrando...' : 'Crear Cuenta'}
                   </Button>
                 </form>
