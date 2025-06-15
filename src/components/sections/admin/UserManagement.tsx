@@ -1,5 +1,5 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLMS } from '@/contexts/LMSContext';
 import { User } from '@/types/lms';
 import {
@@ -10,21 +10,63 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, XCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 const UserManagement = () => {
-  const { users, updateUser } = useLMS();
+  const { users, updateUser, groups, addUsersToGroup } = useLMS();
+  const [selectedGroups, setSelectedGroups] = useState<Record<string, string>>({});
 
   const pendingUsers = useMemo(() => users.filter(u => u.status === 'pending'), [users]);
   const otherUsers = useMemo(() => users.filter(u => u.status !== 'pending').sort((a, b) => (a.name || "").localeCompare(b.name || "")), [users]);
 
-  const handleUpdateStatus = (userId: string, status: 'active' | 'inactive') => {
-    updateUser(userId, { status });
+  const handleGroupSelect = (userId: string, groupId: string) => {
+    setSelectedGroups(prev => ({ ...prev, [userId]: groupId }));
   };
-  
+
+  const handleApproveUser = (userId: string) => {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+
+    if (user.role === 'student') {
+        const groupId = selectedGroups[userId];
+        if (!groupId) {
+            toast.error("Por favor, seleccione un grupo para el alumno antes de aprobarlo.");
+            return;
+        }
+        updateUser(userId, { status: 'active' });
+        addUsersToGroup(groupId, [userId]);
+        toast.success("Alumno aprobado y asignado al grupo.");
+    } else {
+        updateUser(userId, { status: 'active' });
+        toast.success("Usuario aprobado.");
+    }
+  };
+
+  const handleRejectUser = (userId: string) => {
+    updateUser(userId, { status: 'inactive' });
+    toast.info("Usuario rechazado.");
+  };
+
+  const findStudentGroup = (studentId: string): string => {
+    for (const group of groups) {
+      if (group.students.some(student => student.id === studentId)) {
+        return group.name;
+      }
+    }
+    return 'Sin grupo';
+  };
+
   const UserTable = ({ userList, title, description, showActions }: { userList: User[], title: string, description: string, showActions: boolean }) => (
     <Card className="mt-6">
       <CardHeader>
@@ -39,6 +81,7 @@ const UserManagement = () => {
                 <TableHead>Nombre</TableHead>
                 <TableHead className="hidden md:table-cell">Email</TableHead>
                 <TableHead className="hidden sm:table-cell">Rol</TableHead>
+                <TableHead>Grupo</TableHead>
                 <TableHead>Estatus</TableHead>
                 {showActions && <TableHead className="text-right">Acciones</TableHead>}
               </TableRow>
@@ -52,6 +95,26 @@ const UserManagement = () => {
                     <Badge variant="outline">{user.role}</Badge>
                   </TableCell>
                   <TableCell>
+                    {user.role === 'student' ? (
+                      showActions ? (
+                        <Select onValueChange={(value) => handleGroupSelect(user.id, value)} value={selectedGroups[user.id]}>
+                          <SelectTrigger className="w-full md:w-[200px]">
+                            <SelectValue placeholder="Asignar grupo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {groups.filter(g => g.status === 'active').map((group) => (
+                              <SelectItem key={group.id} value={group.id}>{group.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        findStudentGroup(user.id)
+                      )
+                    ) : (
+                      <span className="text-muted-foreground">N/A</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
                     <Badge variant={user.status === 'active' ? 'default' : user.status === 'pending' ? 'secondary' : 'destructive'}>
                       {user.status}
                     </Badge>
@@ -59,11 +122,11 @@ const UserManagement = () => {
                   {showActions && (
                     <TableCell className="text-right">
                       <div className="flex gap-2 justify-end">
-                        <Button variant="ghost" size="icon" onClick={() => handleUpdateStatus(user.id, 'active')}>
+                        <Button variant="ghost" size="icon" onClick={() => handleApproveUser(user.id)}>
                           <CheckCircle className="h-4 w-4 text-green-500" />
                           <span className="sr-only">Aprobar</span>
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleUpdateStatus(user.id, 'inactive')}>
+                        <Button variant="ghost" size="icon" onClick={() => handleRejectUser(user.id)}>
                           <XCircle className="h-4 w-4 text-red-500" />
                           <span className="sr-only">Rechazar</span>
                         </Button>
@@ -73,7 +136,7 @@ const UserManagement = () => {
                 </TableRow>
               )) : (
                 <TableRow>
-                  <TableCell colSpan={showActions ? 5 : 4} className="h-24 text-center">
+                  <TableCell colSpan={showActions ? 6 : 5} className="h-24 text-center">
                     No hay usuarios en esta categoría.
                   </TableCell>
                 </TableRow>
@@ -89,7 +152,7 @@ const UserManagement = () => {
     <div className="p-4 sm:p-6 lg:p-8">
       <header>
         <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Gestión de Usuarios</h1>
-        <p className="text-muted-foreground mt-1">Aprueba o rechaza nuevas solicitudes de registro.</p>
+        <p className="text-muted-foreground mt-1">Aprueba o rechaza nuevas solicitudes de registro y asígnalos a un grupo.</p>
       </header>
       
       <UserTable 
