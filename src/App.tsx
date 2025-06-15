@@ -1,11 +1,11 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { LMSProvider, useLMS } from "@/contexts/LMSContext";
+import { LMSProvider } from "@/contexts/LMSContext";
+import { UserProvider, useUser } from "@/contexts/UserContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
@@ -20,13 +20,15 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <AuthProvider>
-        <LMSProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            {children}
-          </TooltipProvider>
-        </LMSProvider>
+        <UserProvider>
+          <LMSProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              {children}
+            </TooltipProvider>
+          </LMSProvider>
+        </UserProvider>
       </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>
@@ -34,7 +36,7 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
 
 const AppRoutes = () => {
   const { session, loading: authLoading } = useAuth();
-  const { currentUser, loadingCurrentUser } = useLMS();
+  const { currentUser, loadingCurrentUser } = useUser();
 
   if (authLoading || (session && loadingCurrentUser)) {
     return (

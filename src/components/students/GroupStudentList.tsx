@@ -6,7 +6,7 @@ import { Mail, Users } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { useLMS } from '@/contexts/LMSContext';
+import { useUser } from '@/contexts/UserContext';
 import { Group, User } from '@/types/lms';
 import { toast } from 'sonner';
 import { AlertTutorDialog } from '@/components/sections/AlertTutorDialog';
@@ -18,7 +18,7 @@ interface GroupStudentListProps {
 }
 
 const GroupStudentList = ({ group, onStudentSelect }: GroupStudentListProps) => {
-  const { users, updateUser } = useLMS();
+  const { users, updateUser } = useUser();
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
   const [isParentAlertDialogOpen, setIsParentAlertDialogOpen] = useState(false);
   const [selectedStudentForAlert, setSelectedStudentForAlert] = useState<User | null>(null);
