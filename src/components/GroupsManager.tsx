@@ -17,8 +17,6 @@ export default function GroupsManager() {
   const archivedGroups = groups.filter(g => g.status === 'archived');
 
   const groupsToShow = showArchived ? archivedGroups : activeGroups;
-  const emptyStateMessage = showArchived ? "No hay grupos archivados." : "Aún no has creado ningún grupo.";
-
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
@@ -48,7 +46,16 @@ export default function GroupsManager() {
           setSelectedGroup={setSelectedGroup} 
         />
       ) : (
-        <EmptyState onAction={() => setIsCreateOpen(true)} message={emptyStateMessage} />
+        showArchived ? (
+          <EmptyState message="No hay grupos archivados." description="Cuando archives un grupo, aparecerá aquí." />
+        ) : (
+          <EmptyState 
+            message="Aún no has creado ningún grupo."
+            description="Crea tu primer grupo para comenzar a gestionar estudiantes."
+            actionText="Crear Primer Grupo"
+            onAction={() => setIsCreateOpen(true)}
+          />
+        )
       )}
     </div>
   );
