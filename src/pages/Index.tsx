@@ -2,7 +2,6 @@
 import React, { useState, Suspense, lazy } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
-import { ThemeCustomizer } from '@/components/ThemeCustomizer';
 import { Button } from '@/components/ui/button';
 import { Brain } from 'lucide-react';
 import { UserNav } from '@/components/UserNav';
@@ -15,6 +14,9 @@ const StudentManagement = lazy(() => import('@/components/sections/StudentManage
 const TaskManagement = lazy(() => import('@/components/sections/TaskManagement'));
 const Announcements = lazy(() => import('@/components/sections/Announcements'));
 const ProgressTracking = lazy(() => import('@/components/sections/ProgressTracking'));
+const ThemeCustomizerSection = lazy(() => import('@/components/ThemeCustomizer').then(m => ({ default: m.ThemeCustomizer })));
+const Library = lazy(() => Promise.resolve({ default: () => <div className="p-6"><h1>Biblioteca de Recursos</h1><p>Próximamente disponible.</p></div> }));
+
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -35,6 +37,10 @@ const Index = () => {
         return <Announcements />;
       case 'progress':
         return <ProgressTracking />;
+      case 'customization':
+        return <ThemeCustomizerSection />;
+      case 'library':
+        return <Library />;
       default:
         return <Dashboard />;
     }
@@ -55,7 +61,6 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <ThemeCustomizer />
               <Button variant="ghost" size="icon" onClick={() => alert('Asistente de IA próximamente')}>
                 <Brain className="h-5 w-5" />
               </Button>

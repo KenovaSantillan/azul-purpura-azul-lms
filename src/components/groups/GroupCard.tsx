@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Group, Specialty } from '@/types/lms';
 import { useLMS } from '@/contexts/LMSContext';
-import { Users, User as UserIcon } from 'lucide-react';
+import { Users, User as UserIcon, Pencil } from 'lucide-react';
 
 interface GroupCardProps {
     group: Group;
@@ -27,23 +27,31 @@ const getSpecialtyColor = (specialty: Specialty) => {
 export default function GroupCard({ group, index, isSelected, onSelect }: GroupCardProps) {
     const { users } = useLMS();
 
+    const handleEditClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      // Lógica para editar el grupo. Por ahora, una alerta.
+      alert(`Editando el grupo: ${group.name}`);
+    };
+
     return (
         <Card 
             key={group.id} 
-            className="hover:shadow-lg transition-all duration-200 cursor-pointer animate-scale-in border-l-4 border-l-lms-purple-500"
+            className="hover:shadow-lg transition-all duration-200 cursor-pointer animate-scale-in border-l-4 border-l-primary"
             style={{animationDelay: `${index * 100}ms`}}
             onClick={() => onSelect(isSelected ? null : group.id)}
         >
             <CardHeader>
               <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-lg">{group.name}</CardTitle>
+                <div className="flex-1 overflow-hidden">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-lg truncate" title={group.name}>{group.name}</CardTitle>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0" onClick={handleEditClick}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </div>
                   <CardDescription>
                     {group.grade} {group.letter} - {group.shift}
                   </CardDescription>
-                </div>
-                <div className={`p-2 rounded-full ${getSpecialtyColor(group.specialty)} text-white`}>
-                  <Users className="h-4 w-4" />
                 </div>
               </div>
             </CardHeader>
