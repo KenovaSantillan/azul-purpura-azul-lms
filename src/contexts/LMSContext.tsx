@@ -20,6 +20,8 @@ interface LMSContextType {
   updateTask: (id: string, task: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   addAnnouncement: (announcement: Omit<Announcement, 'id' | 'createdAt'>) => void;
+  updateAnnouncement: (id: string, announcement: Partial<Omit<Announcement, 'id' | 'createdAt' | 'createdBy'>>) => void;
+  deleteAnnouncement: (id: string) => void;
   addUsersToGroup: (groupId: string, userIds: string[]) => void;
   removeUserFromGroup: (groupId: string, userId: string) => void;
   createTeam: (team: Omit<Team, 'id'>) => void;
@@ -200,6 +202,14 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
     setAnnouncements(prev => [...prev, newAnnouncement]);
   };
 
+  const updateAnnouncement = (id: string, announcement: Partial<Omit<Announcement, 'id' | 'createdAt' | 'createdBy'>>) => {
+    setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, ...announcement } : a));
+  };
+
+  const deleteAnnouncement = (id: string) => {
+    setAnnouncements(prev => prev.filter(a => a.id !== id));
+  };
+
   const addUsersToGroup = (groupId: string, userIds: string[]) => {
     const usersToAdd = users.filter(u => userIds.includes(u.id));
     setGroups(prev => prev.map(g => 
@@ -297,6 +307,8 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
       updateTask,
       deleteTask,
       addAnnouncement,
+      updateAnnouncement,
+      deleteAnnouncement,
       addUsersToGroup,
       removeUserFromGroup,
       createTeam,
