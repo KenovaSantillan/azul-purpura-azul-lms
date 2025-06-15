@@ -9,12 +9,29 @@ import AddResourceDialog from './AddResourceDialog';
 import ResourceCard from './ResourceCard';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Breadcrumbs from '../navigation/Breadcrumbs';
+import AdvancedSearch from '../search/AdvancedSearch';
+import { useLazyLoading } from '@/hooks/useLazyLoading';
+
+interface SearchFilters {
+  type: string;
+  status: string;
+  dateRange: string;
+  groups: string[];
+}
 
 const Library = () => {
     const { resources, loadingResources } = useLMSResources();
     const { currentUser } = useUser();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState('all');
+    const [advancedFilters, setAdvancedFilters] = useState<SearchFilters>({
+        type: 'all',
+        status: 'all',
+        dateRange: 'all',
+        groups: [],
+    });
+    const { isIntersecting: showMoreResources, elementRef: moreResourcesRef } = useLazyLoading();
     
     const canAddResources = currentUser?.role === 'teacher' || currentUser?.role === 'admin';
 
@@ -25,11 +42,52 @@ const Library = () => {
 
         const typeMatch = filterType === 'all' || resource.type === filterType;
 
-        return searchMatch && typeMatch;
+        // Advanced filters
+        const advancedTypeMatch = advancedFilters.type === 'all' || 
+            (advancedFilters.type === 'resource' && (resource.type === 'file' || resource.type === 'link'));
+
+        const groupMatch = advancedFilters.groups.length === 0 || 
+            (resource.group_id && advancedFilters.groups.includes(resource.group_id)) ||
+            !resource.group_id; // Include general resources
+
+        const dateMatch = (() => {
+            if (advancedFilters.dateRange === 'all') return true;
+            const resourceDate = new Date(resource.created_at);
+            const now = new Date();
+            
+            switch (advancedFilters.dateRange) {
+                case 'today':
+                    return resourceDate.toDateString() === now.toDateString();
+                case 'week':
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    return resourceDate >= weekAgo;
+                case 'month':
+                    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    return resourceDate >= monthAgo;
+                default:
+                    return true;
+            }
+        })();
+
+        return searchMatch && typeMatch && advancedTypeMatch && groupMatch && dateMatch;
     });
+
+    const handleAdvancedSearch = (query: string, filters: SearchFilters) => {
+        setSearchTerm(query);
+        setAdvancedFilters(filters);
+    };
+
+    const breadcrumbItems = [
+        { label: 'Biblioteca de Recursos' }
+    ];
+
+    // Lazy loading: show first 12 resources, then load more
+    const visibleResources = showMoreResources ? filteredResources : filteredResources.slice(0, 12);
 
     return (
         <div className="p-6">
+            <Breadcrumbs items={breadcrumbItems} />
+            
             <header className="mb-6">
                 <div className="flex items-center justify-between mb-4">
                     <div>
@@ -45,28 +103,41 @@ const Library = () => {
                         </AddResourceDialog>
                     )}
                 </div>
-                <div className="flex gap-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                            placeholder="Buscar por título o descripción..."
-                            className="pl-10"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+
+                {/* Enhanced Search */}
+                <div className="space-y-4">
+                    <AdvancedSearch 
+                        onSearch={handleAdvancedSearch}
+                        placeholder="Buscar recursos por título o descripción..."
+                    />
+                    
+                    {/* Quick Filters */}
+                    <div className="flex gap-4">
+                        <Select value={filterType} onValueChange={setFilterType}>
+                            <SelectTrigger className="w-full sm:w-[200px]">
+                                <SelectValue placeholder="Filtro rápido" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todos los tipos</SelectItem>
+                                <SelectItem value="file">Archivos</SelectItem>
+                                <SelectItem value="link">Enlaces</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
-                    <Select value={filterType} onValueChange={setFilterType}>
-                        <SelectTrigger className="w-full sm:w-[200px]">
-                            <SelectValue placeholder="Filtrar por tipo" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Todos los tipos</SelectItem>
-                            <SelectItem value="file">Archivos</SelectItem>
-                            <SelectItem value="link">Enlaces</SelectItem>
-                        </SelectContent>
-                    </Select>
                 </div>
             </header>
+
+            {/* Results Summary */}
+            {!loadingResources && (
+                <div className="mb-4">
+                    <p className="text-sm text-muted-foreground">
+                        {filteredResources.length === resources.length 
+                            ? `Mostrando ${filteredResources.length} recursos`
+                            : `Mostrando ${filteredResources.length} de ${resources.length} recursos`
+                        }
+                    </p>
+                </div>
+            )}
 
             {loadingResources && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -88,9 +159,24 @@ const Library = () => {
                 </div>
             )}
             
-            {!loadingResources && filteredResources.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {filteredResources.map(resource => <ResourceCard key={resource.id} resource={resource} />)}
+            {!loadingResources && visibleResources.length > 0 && (
+                <div className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {visibleResources.map(resource => (
+                            <ResourceCard key={resource.id} resource={resource} />
+                        ))}
+                    </div>
+                    
+                    {/* Load More Trigger */}
+                    {filteredResources.length > 12 && (
+                        <div ref={moreResourcesRef} className="text-center py-4">
+                            {!showMoreResources && (
+                                <Button variant="outline">
+                                    Cargar más recursos...
+                                </Button>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
         </div>

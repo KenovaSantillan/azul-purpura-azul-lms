@@ -2,14 +2,20 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useLMS } from '@/contexts/LMSContext';
 import { useUser } from '@/contexts/UserContext';
-import { Users, List, User, Folder, CheckCircle } from 'lucide-react';
+import { Users, List, User, Folder, CheckCircle, TrendingUp, BarChart3, Calendar } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import NotificationCenter from './notifications/NotificationCenter';
+import Breadcrumbs from './navigation/Breadcrumbs';
+import AnalyticsDashboard from './analytics/AnalyticsDashboard';
+import { useLazyLoading } from '@/hooks/useLazyLoading';
 
 export default function Dashboard() {
   const { groups, tasks, announcements } = useLMS();
   const { users, currentUser } = useUser();
+  const { isIntersecting: showAnalytics, elementRef: analyticsRef } = useLazyLoading();
 
   const getInitials = (name: string) => {
     if (!name) return "";
@@ -32,6 +38,7 @@ export default function Dashboard() {
       description: 'Grupos activos',
       icon: Users,
       color: 'bg-lms-purple-500',
+      trend: '+12%',
     },
     {
       title: 'Estudiantes',
@@ -39,6 +46,7 @@ export default function Dashboard() {
       description: 'Estudiantes registrados',
       icon: User,
       color: 'bg-lms-blue-500',
+      trend: '+8%',
     },
     {
       title: 'Tareas Pendientes',
@@ -46,6 +54,7 @@ export default function Dashboard() {
       description: 'Tareas por completar',
       icon: List,
       color: 'bg-orange-500',
+      trend: '-3%',
     },
     {
       title: 'Profesores',
@@ -53,18 +62,39 @@ export default function Dashboard() {
       description: 'Docentes activos',
       icon: Folder,
       color: 'bg-green-500',
+      trend: '+5%',
     },
+  ];
+
+  const breadcrumbItems = [
+    { label: 'Dashboard', href: '/' }
   ];
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
+      {/* Navigation and Notifications */}
+      <div className="flex items-center justify-between">
+        <Breadcrumbs items={breadcrumbItems} />
+        <NotificationCenter />
+      </div>
+
       {/* Welcome Banner */}
       {currentUser && (
         <Card className="bg-gradient-to-r from-primary/10 to-card animate-fade-in">
           <CardContent className="p-6 flex flex-col sm:flex-row items-center sm:justify-between text-center sm:text-left gap-4">
-            <div>
+            <div className="flex-1">
               <h1 className="text-2xl font-bold text-foreground">¡Bienvenido, {currentUser.name}!</h1>
-              <p className="text-muted-foreground">Aquí tienes un resumen de tu actividad reciente.</p>
+              <p className="text-muted-foreground">Aquí tienes un resumen de tu actividad reciente y métricas importantes.</p>
+              <div className="flex gap-2 mt-3">
+                <Button size="sm" variant="outline">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Ver Calendario
+                </Button>
+                <Button size="sm" variant="outline">
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  Reportes
+                </Button>
+              </div>
             </div>
             <Avatar className="h-16 w-16 border-2 border-primary">
               <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
@@ -76,10 +106,10 @@ export default function Dashboard() {
         </Card>
       )}
 
-      {/* Statistics Cards */}
+      {/* Enhanced Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <Card key={stat.title} className="hover:shadow-lg transition-shadow duration-200 animate-scale-in" style={{animationDelay: `${index * 100}ms`}}>
+          <Card key={stat.title} className="hover:shadow-lg transition-all duration-300 hover:scale-105 animate-scale-in" style={{animationDelay: `${index * 100}ms`}}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
               <div className={`p-2 rounded-full ${stat.color} text-white`}>
@@ -88,31 +118,40 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">{stat.description}</p>
+              <div className="flex items-center justify-between mt-1">
+                <p className="text-xs text-muted-foreground">{stat.description}</p>
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="h-3 w-3 text-green-500" />
+                  <span className="text-xs text-green-500 font-medium">{stat.trend}</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Recent Activity */}
+      {/* Recent Activity - Enhanced */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Groups */}
-        <Card className="animate-fade-in" style={{animationDelay: '400ms'}}>
+        <Card className="animate-fade-in hover:shadow-md transition-shadow" style={{animationDelay: '400ms'}}>
           <CardHeader>
-            <CardTitle>Grupos Recientes</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Grupos Recientes
+            </CardTitle>
             <CardDescription>Últimos grupos creados</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {groups.slice(0, 3).map((group) => (
-                <div key={group.id} className="flex items-center justify-between p-3 bg-accent/50 rounded-lg">
+                <div key={group.id} className="flex items-center justify-between p-3 bg-accent/50 rounded-lg hover:bg-accent/70 transition-colors">
                   <div>
                     <p className="font-medium">{group.name}</p>
                     <p className="text-sm text-muted-foreground">
                       {group.specialty} - {group.shift}
                     </p>
                   </div>
-                  <Badge variant="secondary">
+                  <Badge variant="secondary" className="shrink-0">
                     {group.students.length} estudiantes
                   </Badge>
                 </div>
@@ -124,20 +163,24 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Recent Announcements */}
-        <Card className="animate-fade-in" style={{animationDelay: '500ms'}}>
+        {/* Recent Announcements - Enhanced */}
+        <Card className="animate-fade-in hover:shadow-md transition-shadow" style={{animationDelay: '500ms'}}>
           <CardHeader>
-            <CardTitle>Anuncios Recientes</CardTitle>
-            <CardDescription>Últimas notificaciones</CardDescription>
+            <CardTitle className="flex items-center gap-2">
+              <List className="h-5 w-5" />
+              Anuncios Recientes
+            </CardTitle>
+            <CardDescription>Últimas notificaciones importantes</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {recentAnnouncements.map((announcement) => (
-                <div key={announcement.id} className="p-3 bg-accent/50 rounded-lg">
+                <div key={announcement.id} className="p-3 bg-accent/50 rounded-lg hover:bg-accent/70 transition-colors">
                   <div className="flex items-start justify-between mb-2">
-                    <h4 className="font-medium">{announcement.title}</h4>
+                    <h4 className="font-medium line-clamp-1">{announcement.title}</h4>
                     <Badge 
-                      variant={announcement.priority === 'high' ? 'destructive' : 'secondary'}
+                      variant={announcement.priority === 'high' ? 'destructive' : announcement.priority === 'medium' ? 'default' : 'secondary'}
+                      className="shrink-0 ml-2"
                     >
                       {announcement.priority}
                     </Badge>
@@ -154,23 +197,26 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        {/* Pending Tasks */}
-        <Card className="animate-fade-in" style={{animationDelay: '600ms'}}>
+        {/* Pending Tasks - Enhanced */}
+        <Card className="animate-fade-in hover:shadow-md transition-shadow" style={{animationDelay: '600ms'}}>
           <CardHeader>
-            <CardTitle>Tareas Pendientes</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5" />
+              Tareas Pendientes
+            </CardTitle>
             <CardDescription>Tus próximas entregas</CardDescription>
           </CardHeader>
           <CardContent>
              <div className="space-y-4">
               {pendingTasks.slice(0, 3).map((task) => (
-                <div key={task.id} className="flex items-center justify-between p-3 bg-accent/50 rounded-lg">
-                  <div>
-                    <p className="font-medium">{task.title}</p>
+                <div key={task.id} className="flex items-center justify-between p-3 bg-accent/50 rounded-lg hover:bg-accent/70 transition-colors">
+                  <div className="flex-1">
+                    <p className="font-medium line-clamp-1">{task.title}</p>
                     <p className="text-sm text-muted-foreground">
                       Vence: {new Date(task.dueDate).toLocaleDateString()}
                     </p>
                   </div>
-                  <Badge variant="outline" className="text-orange-500 border-orange-500">
+                  <Badge variant="outline" className="text-orange-500 border-orange-500 shrink-0">
                     Pendiente
                   </Badge>
                 </div>
@@ -185,6 +231,26 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Analytics Section - Lazy Loaded */}
+      <div ref={analyticsRef}>
+        {showAnalytics && (
+          <Card className="animate-fade-in">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5" />
+                Analytics del Portal
+              </CardTitle>
+              <CardDescription>
+                Métricas detalladas y estadísticas del sistema
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AnalyticsDashboard />
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
