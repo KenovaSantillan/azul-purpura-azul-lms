@@ -61,7 +61,7 @@ export default function Dashboard() {
       {/* Welcome Banner */}
       {currentUser && (
         <Card className="bg-gradient-to-r from-primary/10 to-card animate-fade-in">
-          <CardContent className="p-6 flex items-center justify-between">
+          <CardContent className="p-6 flex flex-col sm:flex-row items-center sm:justify-between text-center sm:text-left gap-4">
             <div>
               <h1 className="text-2xl font-bold text-foreground">¡Bienvenido, {currentUser.name}!</h1>
               <p className="text-muted-foreground">Aquí tienes un resumen de tu actividad reciente.</p>
