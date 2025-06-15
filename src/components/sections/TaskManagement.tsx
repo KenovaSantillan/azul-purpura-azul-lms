@@ -1,12 +1,10 @@
+
 import { useState } from 'react';
 import { useLMS } from '@/contexts/LMSContext';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { Bot, Loader2 } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -15,99 +13,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Task } from '@/types/lms';
+import { GradeTaskDialog } from './GradeTaskDialog';
 
 const TaskManagement = () => {
   const { tasks } = useLMS();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState<string | null>(null);
-
-  const handleGrade = async (taskId: string) => {
-    setIsLoading(taskId);
-    const task = tasks.find(t => t.id === taskId);
-
-    if (!task || !task.rubric_structured) {
-      toast({
-        title: 'Error',
-        description: 'La tarea no tiene una rúbrica estructurada para la evaluación.',
-        variant: 'destructive',
-      });
-      setIsLoading(null);
-      return;
-    }
-
-    // This is a mock submission for demonstration purposes.
-    const mockSubmissionContent = `
-      <!DOCTYPE html>
-      <html>
-      <head><title>Mi Proyecto</title></head>
-      <body>
-        <header><h1>Mi Página Web</h1></header>
-        <p>Este es un proyecto de ejemplo.</p>
-        <footer><p>Copyright 2025</p></footer>
-      </body>
-      </html>
-    `;
-
-    try {
-      const { data, error } = await supabase.functions.invoke('grade-submission-v2', {
-        body: {
-          rubric_structured: task.rubric_structured,
-          submissionContent: mockSubmissionContent,
-        },
-      });
-
-      if (error) throw error;
-      
-      const { total_score, feedback, score_details } = data;
-      
-      const renderScoreDetails = (details: Record<string, number>) => {
-          const rubric = task.rubric_structured as {id: string, description: string, points: number}[];
-          if (!rubric) return null;
-
-          return (
-            <ul className="list-disc pl-5 space-y-1">
-              {Object.entries(details).map(([critId, score]) => {
-                const criterion = rubric.find(c => c.id === critId);
-                return (
-                  <li key={critId}>
-                    <span className="font-medium">{criterion?.description || critId}:</span> {score}/{criterion?.points}
-                  </li>
-                );
-              })}
-            </ul>
-          );
-        };
-
-      toast({
-        title: `Evaluación para "${task.title}" completada`,
-        description: (
-          <div className="mt-2 w-full max-w-full">
-            <div className="p-3 rounded-md bg-accent text-accent-foreground text-sm space-y-2">
-                <p><strong className="text-base">Puntuación Total: {total_score}/100</strong></p>
-                <div>
-                    <p className="font-semibold mb-1">Detalles de Calificación:</p>
-                    {renderScoreDetails(score_details)}
-                </div>
-                <div className="pt-1">
-                    <p className="font-semibold mb-1">Feedback General:</p>
-                    <p className="text-sm">{feedback}</p>
-                </div>
-            </div>
-          </div>
-        ),
-        duration: 20000,
-      });
-
-    } catch (error: any) {
-      toast({
-        title: 'Error al evaluar la tarea',
-        description: error.message || 'Ocurrió un error inesperado.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(null);
-    }
-  };
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   return (
     <div className="p-6 animate-fade-in">
@@ -138,17 +49,24 @@ const TaskManagement = () => {
                 </AlertDialog>
               )}
             </div>
-            <Button onClick={() => handleGrade(task.id)} disabled={isLoading === task.id || !task.rubric_structured} size="sm">
-              {isLoading === task.id ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Bot className="mr-2 h-4 w-4" />
-              )}
+            <Button onClick={() => setSelectedTask(task)} disabled={!task.rubric_structured} size="sm">
+              <Bot className="mr-2 h-4 w-4" />
               Calificar con IA
             </Button>
           </div>
         ))}
       </div>
+      {selectedTask && (
+        <GradeTaskDialog
+          task={selectedTask}
+          isOpen={!!selectedTask}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) {
+              setSelectedTask(null);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };
