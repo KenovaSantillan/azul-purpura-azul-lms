@@ -70,7 +70,17 @@ const AppSidebarMenu = ({ activeSection, onSectionChange, currentUserRole }: Sid
       {menuGroups.map((group, index) => (
         <SidebarGroup key={group.title}>
           <SidebarGroupLabel className="text-lg font-bold text-primary mb-2 px-2 pt-2">
-            {index === 0 ? '🎓 Portal Kenova' : group.title}
+            {index === 0 ? (
+              <div className="flex items-center justify-center py-2">
+                <img 
+                  src="/lovable-uploads/c25f0b68-5713-4917-bcfb-9b936b589f47.png" 
+                  alt="Portal Kenova" 
+                  className="h-8 w-auto object-contain"
+                />
+              </div>
+            ) : (
+              group.title
+            )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
