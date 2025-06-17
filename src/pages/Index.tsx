@@ -58,8 +58,12 @@ const Index = () => {
           <header className="border-b bg-card p-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <SidebarTrigger />
-              <div>
-                <h2 className="text-lg font-semibold">Portal Kenova</h2>
+              <div className="flex items-center gap-3">
+                <img 
+                  src="/lovable-uploads/c25f0b68-5713-4917-bcfb-9b936b589f47.png" 
+                  alt="Portal Kenova" 
+                  className="h-10 w-auto object-contain"
+                />
                 <p className="text-sm text-muted-foreground">Sistema de Gestión Educativa</p>
               </div>
             </div>
