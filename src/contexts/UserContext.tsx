@@ -42,7 +42,7 @@ const defaultTeachersAndTutors: User[] = [
   { id: 'teacher-23', name: 'Valdez Alcaraz Alfonso Daniel', email: 'daniel.valdez@cetis14.edu.mx', role: 'teacher', status: 'active' },
   { id: 'teacher-24', name: 'Vázquez Barajas Marcos Alberto', email: 'marcosalberto.vazquez@cetis14.edu.mx', role: 'teacher', status: 'active' },
   
-  // Tutores (algunos de los mismos maestros pueden ser tutores)
+  // Tutores (usando IDs únicos para evitar conflictos)
   { id: 'tutor-1', name: 'Alfaro Hernández Jesús', email: 'jesus.alfaro@cetis14.edu.mx', role: 'tutor', status: 'active' },
   { id: 'tutor-2', name: 'Avalos Vizcarra Ana Elena', email: 'anaelena.avalos@cetis14.edu.mx', role: 'tutor', status: 'active' },
   { id: 'tutor-3', name: 'Barbosa Romo Erika Gabriela', email: 'erika.barbosa@cetis14.edu.mx', role: 'tutor', status: 'active' },
@@ -59,16 +59,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const userData = useUserData();
 
   // Combinar usuarios existentes con la lista predefinida de maestros y tutores
-  const allUsers = [...userData.users, ...defaultTeachersAndTutors];
-  
-  // Eliminar duplicados basados en el email
-  const uniqueUsers = allUsers.filter((user, index, self) => 
-    index === self.findIndex((u) => u.email === user.email)
-  );
+  // Mantener todos los usuarios predefinidos y agregar cualquier usuario adicional de la base de datos
+  const existingEmails = new Set(defaultTeachersAndTutors.map(u => u.email));
+  const additionalUsers = userData.users.filter(u => !existingEmails.has(u.email));
+  const allUsers = [...defaultTeachersAndTutors, ...additionalUsers];
 
   const contextValue = {
     ...userData,
-    users: uniqueUsers,
+    users: allUsers,
   };
 
   return (

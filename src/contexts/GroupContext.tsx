@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Group, User } from '@/types/lms';
 import { useUser } from './UserContext';
@@ -39,8 +38,8 @@ export function GroupProvider({ children }: { children: React.ReactNode }) {
         letter: 'A',
         specialty: 'Programación',
         shift: 'Matutino',
-        teacherId: defaultTeacher?.id || '1',
-        tutorId: defaultTutor?.id || '5',
+        teacherId: defaultTeacher?.id || 'teacher-19',
+        tutorId: defaultTutor?.id || 'tutor-6',
         students: students,
         createdAt: new Date(),
         status: 'active',
