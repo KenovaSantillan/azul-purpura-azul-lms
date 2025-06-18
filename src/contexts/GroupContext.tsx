@@ -26,6 +26,11 @@ export function GroupProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (users.length === 0) return;
 
+    // Buscar un maestro y tutor por defecto de la nueva lista
+    const defaultTeacher = users.find(u => u.role === 'teacher' && u.name.includes('Santillán'));
+    const defaultTutor = users.find(u => u.role === 'tutor' && u.name.includes('García'));
+    const students = users.filter(u => u.role === 'student');
+
     const sampleGroups: Group[] = [
       {
         id: '1',
@@ -34,9 +39,9 @@ export function GroupProvider({ children }: { children: React.ReactNode }) {
         letter: 'A',
         specialty: 'Programación',
         shift: 'Matutino',
-        teacherId: '1',
-        tutorId: '5',
-        students: users.filter(u => u.role === 'student'),
+        teacherId: defaultTeacher?.id || '1',
+        tutorId: defaultTutor?.id || '5',
+        students: students,
         createdAt: new Date(),
         status: 'active',
       }

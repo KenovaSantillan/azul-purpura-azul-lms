@@ -99,17 +99,20 @@ export default function GroupForm({ newGroup, setNewGroup, teachers, tutors }: G
           </Select>
         </div>
         <div>
-          <Label>Docente</Label>
+          <Label>Docente *</Label>
           <Select value={newGroup.teacherId} onValueChange={(value) => setNewGroup({ ...newGroup, teacherId: value })}>
             <SelectTrigger>
               <SelectValue placeholder="Selecciona docente" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-60">
               {teachers.map(teacher => (
                 <SelectItem key={teacher.id} value={teacher.id}>{teacher.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
+          {teachers.length === 0 && (
+            <p className="text-xs text-muted-foreground mt-1">No hay docentes disponibles</p>
+          )}
         </div>
         <div>
           <Label>Tutor (Opcional)</Label>
@@ -117,12 +120,15 @@ export default function GroupForm({ newGroup, setNewGroup, teachers, tutors }: G
             <SelectTrigger>
               <SelectValue placeholder="Selecciona tutor" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-60">
               {tutors.map(tutor => (
                 <SelectItem key={tutor.id} value={tutor.id}>{tutor.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
+          {tutors.length === 0 && (
+            <p className="text-xs text-muted-foreground mt-1">No hay tutores disponibles</p>
+          )}
         </div>
       </div>
     </div>
