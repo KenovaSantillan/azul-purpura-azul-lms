@@ -9,6 +9,72 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      activities: {
+        Row: {
+          activity_number: string
+          allow_late_submissions: boolean | null
+          created_at: string | null
+          created_by: string
+          deliverable: string | null
+          development: string | null
+          due_date: string | null
+          extra_materials: Json | null
+          group_id: string
+          id: string
+          links: Json | null
+          name: string
+          score: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          activity_number: string
+          allow_late_submissions?: boolean | null
+          created_at?: string | null
+          created_by: string
+          deliverable?: string | null
+          development?: string | null
+          due_date?: string | null
+          extra_materials?: Json | null
+          group_id: string
+          id?: string
+          links?: Json | null
+          name: string
+          score?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          activity_number?: string
+          allow_late_submissions?: boolean | null
+          created_at?: string | null
+          created_by?: string
+          deliverable?: string | null
+          development?: string | null
+          due_date?: string | null
+          extra_materials?: Json | null
+          group_id?: string
+          id?: string
+          links?: Json | null
+          name?: string
+          score?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       announcements: {
         Row: {
           content: string
@@ -497,6 +563,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_next_activity_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]

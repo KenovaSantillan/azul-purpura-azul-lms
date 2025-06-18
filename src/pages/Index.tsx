@@ -11,13 +11,13 @@ const Dashboard = lazy(() => import('@/components/Dashboard'));
 const GroupsManager = lazy(() => import('@/components/GroupsManager'));
 const StudentManagement = lazy(() => import('@/components/sections/StudentManagement'));
 const TaskManagement = lazy(() => import('@/components/sections/TaskManagement'));
+const ActivityManagement = lazy(() => import('@/components/activities/ActivityManagement'));
 const Announcements = lazy(() => import('@/components/sections/Announcements'));
 const ProgressTracking = lazy(() => import('@/components/sections/ProgressTracking'));
 const ThemeCustomizerSection = lazy(() => import('@/components/ThemeCustomizer').then(m => ({ default: m.ThemeCustomizer })));
 const Library = lazy(() => import('@/components/resources/Library'));
 const AdminUserManagement = lazy(() => import('@/components/sections/admin/UserManagement'));
 const Legal = lazy(() => import('@/components/sections/Legal'));
-
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -32,6 +32,8 @@ const Index = () => {
         return <StudentManagement />;
       case 'tasks':
         return <TaskManagement />;
+      case 'activities':
+        return <ActivityManagement />;
       case 'announcements':
         return <Announcements />;
       case 'progress':

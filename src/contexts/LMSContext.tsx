@@ -1,14 +1,16 @@
 
 import React, { createContext, useContext } from 'react';
 import { Group, Task, Announcement, StudentProgress, Team, TaskSubmission, Resource } from '@/types/lms';
+import { Activity } from '@/types/activity';
 import { GroupProvider, useGroups, GroupContextType } from './GroupContext';
 import { TaskProvider, useTasks, TaskContextType } from './TaskContext';
 import { AnnouncementProvider, useAnnouncements, AnnouncementContextType } from './AnnouncementContext';
 import { TeamProvider, useTeams, TeamContextType } from './TeamContext';
 import { ChatProvider, useChat, ChatContextType } from './ChatContext';
 import { ResourceProvider, useLMSResources, ResourceContextType } from './ResourceContext';
+import { ActivityProvider, useActivities, ActivityContextType } from './ActivityContext';
 
-type LMSContextType = GroupContextType & TaskContextType & AnnouncementContextType & TeamContextType & ChatContextType & ResourceContextType;
+type LMSContextType = GroupContextType & TaskContextType & AnnouncementContextType & TeamContextType & ChatContextType & ResourceContextType & ActivityContextType;
 
 const LMSContext = createContext<LMSContextType | undefined>(undefined);
 
@@ -19,6 +21,7 @@ const LMSProviderContent = ({ children }: { children: React.ReactNode }) => {
   const teamsContext = useTeams();
   const chatContext = useChat();
   const resourcesContext = useLMSResources();
+  const activitiesContext = useActivities();
 
   const combinedContextValue: LMSContextType = {
     ...groupsContext,
@@ -27,6 +30,7 @@ const LMSProviderContent = ({ children }: { children: React.ReactNode }) => {
     ...teamsContext,
     ...chatContext,
     ...resourcesContext,
+    ...activitiesContext,
   };
 
   return (
@@ -44,9 +48,11 @@ export function LMSProvider({ children }: { children: React.ReactNode }) {
           <TeamProvider>
             <ChatProvider>
               <ResourceProvider>
-                <LMSProviderContent>
-                  {children}
-                </LMSProviderContent>
+                <ActivityProvider>
+                  <LMSProviderContent>
+                    {children}
+                  </LMSProviderContent>
+                </ActivityProvider>
               </ResourceProvider>
             </ChatProvider>
           </TeamProvider>
