@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useActivities } from '@/contexts/ActivityContext';
 import { useLMS } from '@/contexts/LMSContext';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, Calendar, FileText } from 'lucide-react';
+import { Plus, Edit, Trash2, Calendar, FileText, ArrowLeftRight } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CreateActivityDialog } from './CreateActivityDialog';
 import { EditActivityDialog } from './EditActivityDialog';
 import { DeleteActivityDialog } from './DeleteActivityDialog';
+import { MoveResourcesDialog } from './MoveResourcesDialog';
 import { Activity } from '@/types/activity';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -23,6 +24,7 @@ const ActivityManagement = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [activityToEdit, setActivityToEdit] = useState<Activity | null>(null);
   const [activityToDelete, setActivityToDelete] = useState<Activity | null>(null);
+  const [isMoveResourcesOpen, setIsMoveResourcesOpen] = useState(false);
 
   const filteredActivities = activities.filter(activity => {
     const matchesGroup = !selectedGroupId || activity.group_id === selectedGroupId;
@@ -52,10 +54,16 @@ const ActivityManagement = () => {
             }
           </p>
         </div>
-        <Button onClick={() => setIsCreateOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Nueva Actividad
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setIsMoveResourcesOpen(true)}>
+            <ArrowLeftRight className="mr-2 h-4 w-4" />
+            Mover Archivos
+          </Button>
+          <Button onClick={() => setIsCreateOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Nueva Actividad
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -215,6 +223,11 @@ const ActivityManagement = () => {
         activity={activityToDelete}
         isOpen={!!activityToDelete}
         onOpenChange={(isOpen) => !isOpen && setActivityToDelete(null)}
+      />
+
+      <MoveResourcesDialog
+        isOpen={isMoveResourcesOpen}
+        onOpenChange={setIsMoveResourcesOpen}
       />
     </div>
   );
