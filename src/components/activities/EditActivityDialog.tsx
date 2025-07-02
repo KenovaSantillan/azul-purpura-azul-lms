@@ -34,6 +34,7 @@ export const EditActivityDialog = ({ activity, isOpen, onOpenChange }: EditActiv
     extra_materials: [] as string[],
     links: [] as string[],
     group_id: '',
+    unit: 1, // Valor por defecto: Unidad 1
   });
 
   const [newMaterial, setNewMaterial] = useState('');
@@ -51,6 +52,7 @@ export const EditActivityDialog = ({ activity, isOpen, onOpenChange }: EditActiv
         extra_materials: [...activity.extra_materials],
         links: [...activity.links],
         group_id: activity.group_id,
+        unit: activity.unit || 1, // Usar la unidad de la actividad o por defecto 1
       });
     }
   }, [activity]);
@@ -71,6 +73,7 @@ export const EditActivityDialog = ({ activity, isOpen, onOpenChange }: EditActiv
         extra_materials: formData.extra_materials,
         links: formData.links,
         group_id: formData.group_id,
+        unit: formData.unit, // Incluir la unidad en la actualización
       };
 
       await updateActivity(activity.id, updates);
@@ -178,7 +181,7 @@ export const EditActivityDialog = ({ activity, isOpen, onOpenChange }: EditActiv
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="score">Puntaje</Label>
               <Input
@@ -192,6 +195,24 @@ export const EditActivityDialog = ({ activity, isOpen, onOpenChange }: EditActiv
                   score: e.target.value ? parseFloat(e.target.value) : undefined 
                 }))}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="unit">Unidad *</Label>
+              <Select
+                value={formData.unit.toString()}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, unit: parseInt(value) }))}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar unidad" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Unidad 1</SelectItem>
+                  <SelectItem value="2">Unidad 2</SelectItem>
+                  <SelectItem value="3">Unidad 3</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">

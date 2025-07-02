@@ -19,13 +19,16 @@ const ActivityManagement = () => {
   const { activities, loadingActivities } = useActivities();
   const { groups } = useLMS();
   const [selectedGroupId, setSelectedGroupId] = useState<string>('');
+  const [selectedUnit, setSelectedUnit] = useState<string>(''); // Filtro por unidad
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [activityToEdit, setActivityToEdit] = useState<Activity | null>(null);
   const [activityToDelete, setActivityToDelete] = useState<Activity | null>(null);
 
-  const filteredActivities = selectedGroupId 
-    ? activities.filter(activity => activity.group_id === selectedGroupId)
-    : activities;
+  const filteredActivities = activities.filter(activity => {
+    const matchesGroup = !selectedGroupId || activity.group_id === selectedGroupId;
+    const matchesUnit = !selectedUnit || activity.unit.toString() === selectedUnit;
+    return matchesGroup && matchesUnit;
+  });
 
   const selectedGroup = groups.find(g => g.id === selectedGroupId);
 
@@ -55,21 +58,38 @@ const ActivityManagement = () => {
         </Button>
       </div>
 
-      <div className="mb-6">
-        <Label htmlFor="group-select">Filtrar por Grupo</Label>
-        <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
-          <SelectTrigger className="w-full max-w-md">
-            <SelectValue placeholder="Todos los grupos" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="">Todos los grupos</SelectItem>
-            {groups.filter(g => g.status !== 'archived').map(group => (
-              <SelectItem key={group.id} value={group.id}>
-                {group.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="space-y-2">
+          <Label htmlFor="group-select">Filtrar por Grupo</Label>
+          <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Todos los grupos" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Todos los grupos</SelectItem>
+              {groups.filter(g => g.status !== 'archived').map(group => (
+                <SelectItem key={group.id} value={group.id}>
+                  {group.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="unit-select">Filtrar por Unidad</Label>
+          <Select value={selectedUnit} onValueChange={setSelectedUnit}>
+            <SelectTrigger>
+              <SelectValue placeholder="Todas las unidades" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Todas las unidades</SelectItem>
+              <SelectItem value="1">Unidad 1</SelectItem>
+              <SelectItem value="2">Unidad 2</SelectItem>
+              <SelectItem value="3">Unidad 3</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {loadingActivities ? (
@@ -85,9 +105,14 @@ const ActivityManagement = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
-                      <CardTitle className="text-lg">
-                        #{activity.activity_number} - {activity.name}
-                      </CardTitle>
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-lg">
+                          #{activity.activity_number} - {activity.name}
+                        </CardTitle>
+                        <Badge variant="outline" className="text-xs">
+                          Unidad {activity.unit}
+                        </Badge>
+                      </div>
                       <p className="text-sm text-muted-foreground">
                         {activityGroup?.name || 'Grupo no encontrado'}
                       </p>
@@ -167,8 +192,8 @@ const ActivityManagement = () => {
         </div>
       ) : (
         <div className="text-center py-8 text-muted-foreground">
-          {selectedGroupId 
-            ? `No hay actividades para el grupo seleccionado.`
+          {selectedGroupId || selectedUnit
+            ? `No hay actividades para los filtros seleccionados.`
             : 'No hay actividades disponibles. Crea tu primera actividad.'
           }
         </div>

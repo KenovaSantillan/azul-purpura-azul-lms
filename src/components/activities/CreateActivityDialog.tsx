@@ -36,6 +36,7 @@ export const CreateActivityDialog = ({ isOpen, onOpenChange, preselectedGroupId 
     extra_materials: [],
     links: [],
     group_id: preselectedGroupId || '',
+    unit: 1, // Valor por defecto: Unidad 1
   });
 
   const [newMaterial, setNewMaterial] = useState('');
@@ -52,6 +53,7 @@ export const CreateActivityDialog = ({ isOpen, onOpenChange, preselectedGroupId 
       extra_materials: [],
       links: [],
       group_id: preselectedGroupId || '',
+      unit: 1, // Valor por defecto: Unidad 1
     });
     setNewMaterial('');
     setNewLink('');
@@ -180,7 +182,7 @@ export const CreateActivityDialog = ({ isOpen, onOpenChange, preselectedGroupId 
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="score">Puntaje</Label>
               <Input
@@ -195,6 +197,24 @@ export const CreateActivityDialog = ({ isOpen, onOpenChange, preselectedGroupId 
                 }))}
                 placeholder="100"
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="unit">Unidad *</Label>
+              <Select
+                value={formData.unit.toString()}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, unit: parseInt(value) }))}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar unidad" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Unidad 1</SelectItem>
+                  <SelectItem value="2">Unidad 2</SelectItem>
+                  <SelectItem value="3">Unidad 3</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">

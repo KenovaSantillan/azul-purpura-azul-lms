@@ -14,6 +14,7 @@ export interface Activity {
   created_by: string;
   created_at: string;
   updated_at: string;
+  unit: number; // Unidad académica (1, 2, o 3)
 }
 
 export interface CreateActivityData {
@@ -26,4 +27,5 @@ export interface CreateActivityData {
   extra_materials: string[];
   links: string[];
   group_id: string;
+  unit: number; // Unidad académica (1, 2, o 3)
 }
