@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Activity, CreateActivityData } from '@/types/activity';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useUser } from '@/contexts/UserContext';
 
 export interface ActivityContextType {
   activities: Activity[];
@@ -18,6 +19,7 @@ const ActivityContext = createContext<ActivityContextType | undefined>(undefined
 export function ActivityProvider({ children }: { children: React.ReactNode }) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loadingActivities, setLoadingActivities] = useState(true);
+  const { currentUser } = useUser();
 
   useEffect(() => {
     fetchActivities();
@@ -31,7 +33,15 @@ export function ActivityProvider({ children }: { children: React.ReactNode }) {
         .order('activity_number', { ascending: true });
 
       if (error) throw error;
-      setActivities(data || []);
+      
+      // Convert database Json types to string[] for TypeScript compatibility
+      const convertedData = (data || []).map(activity => ({
+        ...activity,
+        extra_materials: Array.isArray(activity.extra_materials) ? activity.extra_materials as string[] : [],
+        links: Array.isArray(activity.links) ? activity.links as string[] : []
+      }));
+      
+      setActivities(convertedData);
     } catch (error) {
       console.error('Error fetching activities:', error);
       toast.error('Error al cargar las actividades');
@@ -42,6 +52,11 @@ export function ActivityProvider({ children }: { children: React.ReactNode }) {
 
   const createActivity = async (activityData: CreateActivityData): Promise<Activity | null> => {
     try {
+      if (!currentUser?.id) {
+        toast.error('No se puede crear la actividad. Usuario no autenticado.');
+        return null;
+      }
+
       // Get next activity number
       const { data: nextNumberData, error: numberError } = await supabase
         .rpc('get_next_activity_number');
@@ -53,15 +68,25 @@ export function ActivityProvider({ children }: { children: React.ReactNode }) {
         .insert({
           ...activityData,
           activity_number: nextNumberData,
+          created_by: currentUser.id,
+          extra_materials: activityData.extra_materials,
+          links: activityData.links,
         })
         .select()
         .single();
 
       if (error) throw error;
 
-      setActivities(prev => [...prev, data]);
+      // Convert the response to match our Activity type
+      const convertedActivity = {
+        ...data,
+        extra_materials: Array.isArray(data.extra_materials) ? data.extra_materials as string[] : [],
+        links: Array.isArray(data.links) ? data.links as string[] : []
+      };
+
+      setActivities(prev => [...prev, convertedActivity]);
       toast.success(`Actividad "${data.name}" creada exitosamente`);
-      return data;
+      return convertedActivity;
     } catch (error) {
       console.error('Error creating activity:', error);
       toast.error('Error al crear la actividad');
@@ -80,8 +105,15 @@ export function ActivityProvider({ children }: { children: React.ReactNode }) {
 
       if (error) throw error;
 
+      // Convert the response to match our Activity type
+      const convertedActivity = {
+        ...data,
+        extra_materials: Array.isArray(data.extra_materials) ? data.extra_materials as string[] : [],
+        links: Array.isArray(data.links) ? data.links as string[] : []
+      };
+
       setActivities(prev => prev.map(activity => 
-        activity.id === id ? data : activity
+        activity.id === id ? convertedActivity : activity
       ));
       toast.success('Actividad actualizada exitosamente');
     } catch (error) {
