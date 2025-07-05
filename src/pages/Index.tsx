@@ -59,14 +59,15 @@ const Index = () => {
           {/* Header */}
           <header className="border-b bg-card p-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <SidebarTrigger />
+              <SidebarTrigger className="md:hidden h-9 w-9 bg-primary text-primary-foreground hover:bg-primary/90" />
+              <SidebarTrigger className="hidden md:block" />
               <div className="flex items-center gap-3">
                 <img 
                   src="/lovable-uploads/c25f0b68-5713-4917-bcfb-9b936b589f47.png" 
                   alt="Portal Kenova" 
                   className="h-10 w-auto object-contain"
                 />
-                <p className="text-sm text-muted-foreground">Sistema de Gestión Educativa</p>
+                <p className="text-sm text-muted-foreground hidden sm:block">Sistema de Gestión Educativa</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
