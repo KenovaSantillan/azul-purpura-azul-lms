@@ -1,17 +1,48 @@
 
 /* Custom drag and drop styles */
 .drag-item {
-  @apply transition-all duration-200 cursor-move hover:shadow-lg;
+  @apply transition-all duration-200 cursor-move hover:shadow-medium hover:scale-105;
 }
 
 .drag-over {
-  @apply bg-accent/50 border-2 border-dashed border-primary;
+  @apply bg-accent/50 border-2 border-dashed border-primary shadow-soft;
 }
 
 .drop-zone {
-  @apply min-h-[100px] border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 transition-colors;
+  @apply min-h-[100px] border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 transition-all duration-300 hover:border-primary/50;
 }
 
 .drop-zone.active {
-  @apply border-primary bg-accent/20;
+  @apply border-primary bg-accent/20 shadow-medium animate-pulse-soft;
+}
+
+/* Glass morphism utilities */
+.glass-card {
+  @apply bg-glass-bg backdrop-blur-glass border border-glass-border shadow-medium;
+}
+
+.glass-button {
+  @apply bg-glass-bg backdrop-blur-glass border border-glass-border hover:bg-glass-bg/90 transition-all duration-200;
+}
+
+/* Enhanced interactive elements */
+.interactive-card {
+  @apply transition-all duration-300 hover:shadow-large hover:-translate-y-1 hover:scale-[1.02];
+}
+
+.floating-action {
+  @apply animate-bounce-gentle hover:animate-glow transition-all duration-300;
+}
+
+/* Smooth scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-muted/20 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-primary/50 rounded-full hover:bg-primary/70;
 }
