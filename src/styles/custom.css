@@ -18,11 +18,11 @@
 
 /* Glass morphism utilities */
 .glass-card {
-  @apply bg-glass-bg backdrop-blur-glass border border-glass-border shadow-medium;
+  @apply bg-card/80 backdrop-blur-glass border border-border/50 shadow-medium;
 }
 
 .glass-button {
-  @apply bg-glass-bg backdrop-blur-glass border border-glass-border hover:bg-glass-bg/90 transition-all duration-200;
+  @apply bg-card/80 backdrop-blur-glass border border-border/50 hover:bg-card/90 transition-all duration-200;
 }
 
 /* Enhanced interactive elements */

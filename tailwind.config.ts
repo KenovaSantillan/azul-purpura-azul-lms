@@ -63,6 +63,11 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				// Glass morphism colors
+				glass: {
+					bg: 'var(--glass-bg)',
+					border: 'var(--glass-border)',
+				},
 				// LMS custom colors
 				'lms-purple': {
 					500: '#9b87f5',

@@ -57,7 +57,7 @@ const Index = () => {
         <AppSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
         <main className="flex-1 flex flex-col">
           {/* Header */}
-          <header className="border-b bg-card/80 backdrop-blur-glass p-4 flex items-center justify-between shadow-soft sticky top-0 z-50">
+          <header className="border-b bg-card/80 backdrop-blur-sm p-4 flex items-center justify-between shadow-soft sticky top-0 z-50">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="md:hidden h-9 w-9 bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-soft transition-all duration-200" />
               <SidebarTrigger className="hidden md:block hover:bg-accent/50 transition-all duration-200" />
