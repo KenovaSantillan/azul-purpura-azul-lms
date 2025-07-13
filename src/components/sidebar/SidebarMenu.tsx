@@ -69,7 +69,7 @@ const AppSidebarMenu = ({ activeSection, onSectionChange, currentUserRole }: Sid
     <>
       {menuGroups.map((group, index) => (
         <SidebarGroup key={group.title}>
-          <SidebarGroupLabel className="text-lg font-bold text-primary mb-2 px-2 pt-2">
+          <SidebarGroupLabel className="text-lg font-bold text-sidebar-foreground mb-2 px-2 pt-2">
             {index === 0 ? (
               <div className="flex items-center justify-center py-2">
                 <img 
@@ -79,7 +79,7 @@ const AppSidebarMenu = ({ activeSection, onSectionChange, currentUserRole }: Sid
                 />
               </div>
             ) : (
-              group.title
+              <span className="text-sidebar-foreground font-semibold">{group.title}</span>
             )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -89,14 +89,14 @@ const AppSidebarMenu = ({ activeSection, onSectionChange, currentUserRole }: Sid
                   <SidebarMenuButton 
                     asChild 
                     isActive={activeSection === item.url.replace('#', '')}
-                    className="hover:bg-accent transition-colors duration-200"
+                    className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors duration-200 data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground"
                   >
                     <button
                       onClick={() => onSectionChange(item.url.replace('#', ''))}
-                      className="w-full flex items-center gap-3 p-3 rounded-lg group"
+                      className="w-full flex items-center gap-3 p-3 rounded-lg group text-sidebar-foreground hover:text-sidebar-accent-foreground"
                     >
-                      <item.icon className="h-5 w-5 transition-transform duration-300 ease-in-out group-hover:scale-110" />
-                      <span className="transition-transform duration-300 ease-in-out group-hover:translate-x-1">{item.title}</span>
+                      <item.icon className="h-5 w-5 transition-transform duration-300 ease-in-out group-hover:scale-110 text-current" />
+                      <span className="transition-transform duration-300 ease-in-out group-hover:translate-x-1 text-current">{item.title}</span>
                     </button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

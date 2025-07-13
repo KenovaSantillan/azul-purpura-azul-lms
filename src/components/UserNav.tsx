@@ -48,24 +48,27 @@ export function UserNav() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent className="w-56 bg-popover border border-border shadow-large" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{currentUser.name}</p>
+            <p className="text-sm font-medium leading-none text-popover-foreground">{currentUser.name}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {currentUser.email}
             </p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-border" />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem className="text-popover-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer">
             <User className="mr-2 h-4 w-4" />
             <span>Perfil</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuSeparator className="bg-border" />
+        <DropdownMenuItem 
+          onClick={handleLogout}
+          className="text-popover-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
+        >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Cerrar sesión</span>
         </DropdownMenuItem>
