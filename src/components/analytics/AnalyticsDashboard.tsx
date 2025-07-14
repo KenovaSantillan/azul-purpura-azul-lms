@@ -154,26 +154,26 @@ const AnalyticsDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted/50 border border-muted rounded-lg hover:bg-muted/70 transition-colors">
               <div className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                <span className="font-medium">Tareas Completadas</span>
+                <CheckCircle className="h-5 w-5 text-emerald-500" />
+                <span className="font-medium text-foreground">Tareas Completadas</span>
               </div>
               <Badge variant="secondary">{completedTasks}</Badge>
             </div>
             
-            <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted/50 border border-muted rounded-lg hover:bg-muted/70 transition-colors">
               <div className="flex items-center gap-3">
-                <Clock className="h-5 w-5 text-yellow-600" />
-                <span className="font-medium">Tareas Pendientes</span>
+                <Clock className="h-5 w-5 text-amber-500" />
+                <span className="font-medium text-foreground">Tareas Pendientes</span>
               </div>
               <Badge variant="outline">{pendingTasks}</Badge>
             </div>
             
-            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-muted/50 border border-muted rounded-lg hover:bg-muted/70 transition-colors">
               <div className="flex items-center gap-3">
-                <Users className="h-5 w-5 text-blue-600" />
-                <span className="font-medium">Estudiantes Activos</span>
+                <Users className="h-5 w-5 text-primary" />
+                <span className="font-medium text-foreground">Estudiantes Activos</span>
               </div>
               <Badge variant="secondary">{totalStudents}</Badge>
             </div>
