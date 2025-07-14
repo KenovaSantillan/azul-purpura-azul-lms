@@ -21,14 +21,14 @@ const WelcomeBanner = ({ currentUser }: WelcomeBannerProps) => {
   };
 
   return (
-    <Card className="bg-gradient-hero border-0 shadow-large animate-fade-in hover:shadow-large transition-all duration-300 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-primary opacity-5 animate-pulse-soft"></div>
+    <Card className="bg-card border shadow-large animate-fade-in hover:shadow-large transition-all duration-300 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent animate-pulse-soft"></div>
       <CardContent className="p-6 flex flex-col sm:flex-row items-center sm:justify-between text-center sm:text-left gap-4 relative z-10">
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-foreground mb-2 animate-bounce-gentle">
+          <h1 className="text-3xl font-bold text-card-foreground mb-2 animate-bounce-gentle">
             ¡Bienvenido, {currentUser.name}! 🎉
           </h1>
-          <p className="text-muted-foreground text-lg mb-4">
+          <p className="text-card-foreground/80 text-lg mb-4">
             Aquí tienes un resumen de tu actividad reciente y métricas importantes.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 mt-4">
