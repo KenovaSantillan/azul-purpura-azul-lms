@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LMSProvider } from "@/contexts/LMSContext";
 import { UserProvider, useUser } from "@/contexts/UserContext";
@@ -88,11 +88,11 @@ const AppRoutes = () => {
 };
 
 const App = () => (
-  <BrowserRouter>
+  <HashRouter>
     <AppProviders>
       <AppRoutes />
     </AppProviders>
-  </BrowserRouter>
+  </HashRouter>
 );
 
 export default App;
