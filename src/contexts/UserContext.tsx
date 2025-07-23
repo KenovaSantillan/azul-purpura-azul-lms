@@ -69,6 +69,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const additionalUsers = userData.users.filter(u => !existingEmails.has(u.email));
   const allUsers = [...defaultTeachersAndTutors, ...additionalUsers];
 
+  console.log("Current User in Context:", userData.currentUser);
+  console.log("Active View in Context:", activeView);
+
   const contextValue = {
     ...userData,
     users: allUsers,
