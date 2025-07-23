@@ -37,6 +37,7 @@ export default function CreateGroupDialog({ isCreateOpen, setIsCreateOpen }: Cre
   const tutors = users.filter(u => u.role === 'tutor');
 
   const handleNextStep = () => {
+    console.log("Submitting new group:", newGroup);
     if (newGroup.name && newGroup.teacherId) {
       const created = addGroup({
         ...newGroup,

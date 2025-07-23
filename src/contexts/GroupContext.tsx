@@ -23,33 +23,34 @@ export function GroupProvider({ children }: { children: React.ReactNode }) {
   const { users, loadingUsers } = useUser();
 
   useEffect(() => {
-    if (users.length === 0) return;
+    if (users.length > 0 && groups.length === 0) { // Solo se ejecuta si no hay grupos
+      // Buscar un maestro y tutor por defecto de la nueva lista
+      const defaultTeacher = users.find(u => u.role === 'teacher' && u.name.includes('Santillán'));
+      const defaultTutor = users.find(u => u.role === 'tutor' && u.name.includes('García'));
+      const students = users.filter(u => u.role === 'student');
 
-    // Buscar un maestro y tutor por defecto de la nueva lista
-    const defaultTeacher = users.find(u => u.role === 'teacher' && u.name.includes('Santillán'));
-    const defaultTutor = users.find(u => u.role === 'tutor' && u.name.includes('García'));
-    const students = users.filter(u => u.role === 'student');
+      const sampleGroups: Group[] = [
+        {
+          id: '1',
+          name: '1° A - Programación Matutino',
+          grade: '1o',
+          letter: 'A',
+          specialty: 'Programación',
+          shift: 'Matutino',
+          teacherId: defaultTeacher?.id || 'teacher-19',
+          tutorId: defaultTutor?.id || 'tutor-6',
+          students: students,
+          createdAt: new Date(),
+          status: 'active',
+        }
+      ];
 
-    const sampleGroups: Group[] = [
-      {
-        id: '1',
-        name: '1° A - Programación Matutino',
-        grade: '1o',
-        letter: 'A',
-        specialty: 'Programación',
-        shift: 'Matutino',
-        teacherId: defaultTeacher?.id || 'teacher-19',
-        tutorId: defaultTutor?.id || 'tutor-6',
-        students: students,
-        createdAt: new Date(),
-        status: 'active',
-      }
-    ];
-
-    setGroups(sampleGroups);
-  }, [users]);
+      setGroups(sampleGroups);
+    }
+  }, [users, groups]);
 
   const addGroup = (group: Omit<Group, 'id' | 'createdAt'>): Group => {
+    console.log("Adding group in context:", group);
     const newGroup: Group = {
       ...group,
       id: Date.now().toString(),
