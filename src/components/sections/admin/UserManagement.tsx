@@ -1,5 +1,6 @@
 
 import React, { useMemo, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useLMS } from '@/contexts/LMSContext';
 import { useUser } from '@/contexts/UserContext';
 import { UserRole } from '@/types/lms';
@@ -23,29 +24,41 @@ const UserManagement = () => {
     setSelectedRoles(prev => ({ ...prev, [userId]: role }));
   };
 
-  const handleApproveUser = (userId: string) => {
+  const handleApproveUser = async (userId: string) => {
     const user = users.find(u => u.id === userId);
     if (!user) return;
 
     const roleToAssign = selectedRoles[userId] || user.role;
     const isTeacher = roleToAssign === 'teacher';
 
-    if (roleToAssign === 'student') {
-        const groupId = selectedGroups[userId];
-        if (!groupId) {
-            toast.error("Por favor, seleccione un grupo para el alumno antes de aprobarlo.");
-            return;
-        }
-        updateUser(userId, { status: 'active', role: 'student' });
-        addUsersToGroup(groupId, [userId]);
-        toast.success("Alumno aprobado y asignado al grupo.");
-    } else {
-        updateUser(userId, { 
-          status: 'active', 
-          role: roleToAssign,
-          ...(isTeacher && { ai_grading_enabled: true })
-        });
-        toast.success("Usuario aprobado.");
+    try {
+      if (roleToAssign === 'student') {
+          const groupId = selectedGroups[userId];
+          if (!groupId) {
+              toast.error("Por favor, seleccione un grupo para el alumno antes de aprobarlo.");
+              return;
+          }
+          await updateUser(userId, { status: 'active', role: 'student' });
+          await addUsersToGroup(groupId, [userId]);
+          toast.success("Alumno aprobado y asignado al grupo.");
+      } else {
+          await updateUser(userId, {
+            status: 'active',
+            role: roleToAssign,
+            ...(isTeacher && { ai_grading_enabled: true })
+          });
+          toast.success("Usuario aprobado.");
+      }
+
+      // Send welcome email
+      const { error } = await supabase.functions.invoke('send-welcome-email', {
+        body: { email: user.email, name: user.name },
+      })
+      if (error) throw error
+
+    } catch (error) {
+      console.error('Error approving user or sending email:', error)
+      toast.error('Ocurrió un error al aprobar al usuario.');
     }
   };
 
