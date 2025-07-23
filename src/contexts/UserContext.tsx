@@ -35,7 +35,7 @@ const defaultTeachersAndTutors: User[] = [
   { id: 'teacher-16', name: 'Rizo García Gerardo Alejandro', email: 'gerardo.rizo@cetis14.edu.mx', role: 'teacher', status: 'active' },
   { id: 'teacher-17', name: 'Rodríguez Mendoza Adriana María', email: 'adriana.rodriguez@cetis14.edu.mx', role: 'teacher', status: 'active' },
   { id: 'teacher-18', name: 'Rosales Briseño Jorge Luis', email: 'jorgeluis.rosales@cetis14.edu.mx', role: 'teacher', status: 'active' },
-  { id: 'teacher-19', name: 'Santillán Vázquez Francisco', email: 'francisco.santillan@cetis14.edu.mx', role: 'teacher', status: 'active' },
+  { id: 'teacher-19', name: 'Santillán Vázquez Francisco', email: 'franksantillan.mx@gmail.com', role: 'teacher', status: 'active' },
   { id: 'teacher-20', name: 'Soto Navarro Miriam Elizabeth', email: 'miriam.soto@cetis14.edu.mx', role: 'teacher', status: 'active' },
   { id: 'teacher-21', name: 'Suarez Delgado José Antonio', email: 'joseantonio.suarez@cetis14.edu.mx', role: 'teacher', status: 'active' },
   { id: 'teacher-22', name: 'Torres Cervantes Rita Judith', email: 'judith.torres@cetis14.edu.mx', role: 'teacher', status: 'active' },
