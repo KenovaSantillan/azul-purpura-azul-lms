@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import AuthPage from "./pages/AuthPage";
+import SignUpPage from "./pages/SignUpPage";
 import PendingApprovalPage from "./pages/PendingApprovalPage";
 import InactiveAccountPage from "./pages/InactiveAccountPage";
 import React from "react";
@@ -79,6 +80,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/auth" element={!session ? <AuthPage /> : <Navigate to="/" replace />} />
+      <Route path="/signup" element={!session ? <SignUpPage /> : <Navigate to="/" replace />} />
       <Route path="/" element={session ? <Index /> : <Navigate to="/auth" replace />} />
       <Route path="/index.html" element={<Navigate to="/" replace />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

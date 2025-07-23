@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { formatName } from '@/lib/string-utils';
+import { Link } from 'react-router-dom';
 
 export default function AuthPage() {
   const [loginEmail, setLoginEmail] = useState('');
@@ -282,47 +283,11 @@ export default function AuthPage() {
                 <CardTitle>Registrarse</CardTitle>
                 <CardDescription>Crea una nueva cuenta en Portal Kenova.</CardDescription>
               </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSignUp} className="space-y-4">
-                   <div className="space-y-2">
-                    <Label htmlFor="signup-first-name">Nombre(s)</Label>
-                    <Input id="signup-first-name" type="text" placeholder="Tu nombre(s)" value={signupFirstName} onChange={(e) => setSignupFirstName(formatName(e.target.value))} required />
-                  </div>
-                   <div className="space-y-2">
-                    <Label htmlFor="signup-last-name">Apellidos</Label>
-                    <Input id="signup-last-name" type="text" placeholder="Tus apellidos" value={signupLastName} onChange={(e) => setSignupLastName(formatName(e.target.value))} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Correo Electrónico</Label>
-                    <Input id="signup-email" type="email" placeholder="tu@email.com" value={signupEmail} onChange={(e) => setSignupEmail(e.target.value)} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Contraseña</Label>
-                    <div className="relative">
-                      <Input
-                        id="signup-password"
-                        type={showSignupPassword ? 'text' : 'password'}
-                        placeholder="Mínimo 8 caracteres"
-                        value={signupPassword}
-                        onChange={(e) => setSignupPassword(e.target.value)}
-                        required
-                        minLength={8}
-                        className="pr-10"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowSignupPassword((prev) => !prev)}
-                        className="absolute inset-y-0 right-0 flex items-center justify-center w-10 text-muted-foreground focus:outline-none"
-                        aria-label={showSignupPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                      >
-                        {showSignupPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                      </button>
-                    </div>
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                     {loading ? 'Registrando...' : 'Crear Cuenta'}
-                  </Button>
-                </form>
+              <CardContent className="text-center">
+                <p className="mb-4">¿No tienes una cuenta?</p>
+                <Link to="/signup">
+                  <Button className="w-full">Ir a la página de registro</Button>
+                </Link>
               </CardContent>
             </Card>
           </TabsContent>
