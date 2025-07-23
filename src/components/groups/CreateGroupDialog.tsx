@@ -37,7 +37,7 @@ export default function CreateGroupDialog({ isCreateOpen, setIsCreateOpen }: Cre
   const tutors = users.filter(u => u.role === 'tutor');
 
   const handleNextStep = () => {
-    if (newGroup.name && newGroup.grade && newGroup.letter && newGroup.specialty && newGroup.shift && newGroup.teacherId) {
+    if (newGroup.name && newGroup.teacherId) {
       const created = addGroup({
         ...newGroup,
         students: [],
@@ -46,7 +46,7 @@ export default function CreateGroupDialog({ isCreateOpen, setIsCreateOpen }: Cre
       setCreatedGroup(created);
       setStep(2);
     } else {
-      toast.error("Por favor, completa todos los campos requeridos.");
+      toast.error("Por favor, selecciona un grupo y un docente.");
     }
   };
   
