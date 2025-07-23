@@ -2,6 +2,7 @@
 import React, { useState, Suspense, lazy } from 'react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
+import { useUser } from '@/contexts/UserContext';
 import { Button } from '@/components/ui/button';
 import { Brain } from 'lucide-react';
 import { UserNav } from '@/components/UserNav';
@@ -18,9 +19,15 @@ const ThemeCustomizerSection = lazy(() => import('@/components/ThemeCustomizer')
 const Library = lazy(() => import('@/components/resources/Library'));
 const AdminUserManagement = lazy(() => import('@/components/sections/admin/UserManagement'));
 const Legal = lazy(() => import('@/components/sections/Legal'));
+const SuperAdminDashboard = lazy(() => import('@/pages/SuperAdminDashboard'));
 
 const Index = () => {
+  const { currentUser, activeView, setActiveView } = useUser();
   const [activeSection, setActiveSection] = useState('dashboard');
+
+  if (currentUser?.role === 'superadmin' && activeView === 'superadmin') {
+    return <SuperAdminDashboard />;
+  }
 
   const renderContent = () => {
     switch (activeSection) {
@@ -86,6 +93,11 @@ const Index = () => {
                 <Brain className="h-5 w-5 group-hover:animate-bounce-gentle" />
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-pulse-soft"></span>
               </Button>
+              {currentUser?.role === 'superadmin' && (
+                <Button variant="outline" onClick={() => setActiveView('superadmin')}>
+                  Volver a Superadmin
+                </Button>
+              )}
               <UserNav />
             </div>
           </header>

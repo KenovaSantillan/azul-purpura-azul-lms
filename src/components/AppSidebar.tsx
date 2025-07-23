@@ -31,7 +31,7 @@ export function AppSidebar({ activeSection, onSectionChange }: AppSidebarProps) 
           onSectionChange={onSectionChange}
           currentUserRole={currentUser.role}
         />
-        {currentUser.role === 'admin' && (
+        {(currentUser.role === 'admin' || currentUser.role === 'superadmin') && (
           <AdminMenu 
             activeSection={activeSection}
             onSectionChange={onSectionChange}

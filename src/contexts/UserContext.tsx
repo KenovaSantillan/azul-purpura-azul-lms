@@ -1,15 +1,19 @@
 
-import React, { createContext, useContext } from 'react';
-import { User } from '@/types/lms';
+import React, { createContext, useContext, useState } from 'react';
+import { User, UserRole } from '@/types/lms';
 import { useUserData } from '@/hooks/useUserData';
+
+type ActiveView = 'superadmin' | 'teacher';
 
 interface UserContextType {
   users: User[];
   loadingUsers: boolean;
   currentUser: User | null;
   loadingCurrentUser: boolean;
-  createUser: (userData: { email: string; role: 'student' | 'teacher' | 'tutor' | 'parent' | 'admin'; first_name: string; last_name: string; }) => Promise<User>;
+  createUser: (userData: { email: string; role: UserRole; first_name: string; last_name: string; }) => Promise<User>;
   updateUser: (id: string, user: Partial<User>) => Promise<void>;
+  activeView: ActiveView;
+  setActiveView: (view: ActiveView) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -57,6 +61,7 @@ const defaultTeachersAndTutors: User[] = [
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const userData = useUserData();
+  const [activeView, setActiveView] = useState<ActiveView>('superadmin');
 
   // Combinar usuarios existentes con la lista predefinida de maestros y tutores
   // Mantener todos los usuarios predefinidos y agregar cualquier usuario adicional de la base de datos
@@ -67,6 +72,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const contextValue = {
     ...userData,
     users: allUsers,
+    activeView,
+    setActiveView,
   };
 
   return (

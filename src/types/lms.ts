@@ -3,7 +3,7 @@ export type Letter = 'A' | 'B' | 'C' | 'D' | 'E';
 export type Specialty = 'Servicios de Hospedaje' | 'Programación' | 'Contabilidad' | 'Construcción';
 export type Shift = 'Matutino' | 'Vespertino';
 export type TaskType = 'collective' | 'group' | 'individual';
-export type UserRole = 'student' | 'teacher' | 'tutor' | 'parent' | 'admin';
+export type UserRole = 'student' | 'teacher' | 'tutor' | 'parent' | 'admin' | 'superadmin';
 export type ResourceType = 'file' | 'link';
 
 export interface User {
