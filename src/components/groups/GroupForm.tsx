@@ -71,7 +71,6 @@ export default function GroupForm({ newGroup, setNewGroup, teachers, tutors }: G
 
   const handleGroupChange = (groupName: string) => {
     const selectedGroup = availableGroups.find(g => g.name === groupName);
-    console.log("Group selected in form:", selectedGroup);
     if (selectedGroup) {
       setNewGroup(prev => ({
         ...prev,

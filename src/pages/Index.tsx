@@ -23,9 +23,7 @@ const Index = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
 
   const renderContent = () => {
-    console.log("Rendering Index.tsx. Current User Role:", currentUser?.role, "Active View:", activeView);
     if (currentUser?.role === 'superadmin' && activeView === 'superadmin') {
-      console.log("Should render AdminUserManagement");
       return <AdminUserManagement />;
     }
 

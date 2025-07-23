@@ -50,7 +50,6 @@ export function GroupProvider({ children }: { children: React.ReactNode }) {
   }, [users, groups]);
 
   const addGroup = (group: Omit<Group, 'id' | 'createdAt'>): Group => {
-    console.log("Adding group in context:", group);
     const newGroup: Group = {
       ...group,
       id: Date.now().toString(),
