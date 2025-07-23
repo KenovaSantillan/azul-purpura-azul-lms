@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { AnimatedButton } from '@/components/ui/AnimatedButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -200,9 +201,9 @@ export default function AuthPage() {
                       </button>
                     </div>
                   </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <AnimatedButton type="submit" className="w-full" disabled={loading}>
                     {loading ? 'Iniciando...' : 'Iniciar Sesión'}
-                  </Button>
+                  </AnimatedButton>
                   
                   <Dialog open={showRecoveryDialog} onOpenChange={setShowRecoveryDialog}>
                     <DialogTrigger asChild>
