@@ -42,6 +42,12 @@
     --shadow-large: 0 25px 50px -12px hsl(var(--primary) / 0.25);
     --glass-bg: hsla(0, 0%, 100%, 0.8);
     --glass-border: hsla(214.3, 31.8%, 91.4%, 0.5);
+    
+    /* Efectos neumórficos */
+    --neomorphic-light: 6px 6px 12px hsl(var(--primary) / 0.2), -6px -6px 12px hsl(0 0% 100% / 0.8);
+    --neomorphic-pressed: inset 4px 4px 8px hsl(var(--primary) / 0.2), inset -4px -4px 8px hsl(0 0% 100% / 0.8);
+    --neomorphic-card: 8px 8px 16px hsl(var(--primary) / 0.15), -8px -8px 16px hsl(0 0% 100% / 0.9);
+    --neomorphic-subtle: 3px 3px 6px hsl(var(--primary) / 0.1), -3px -3px 6px hsl(0 0% 100% / 0.7);
 
     --sidebar-background: 258 90% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -91,6 +97,12 @@
     --shadow-large: 0 25px 50px -12px hsl(0 0% 0% / 0.4);
     --glass-bg: hsla(240, 10%, 3.9%, 0.8);
     --glass-border: hsla(240, 3.7%, 15.9%, 0.3);
+    
+    /* Efectos neumórficos modo oscuro */
+    --neomorphic-light: 6px 6px 12px hsl(0 0% 0% / 0.5), -6px -6px 12px hsl(var(--background)) 0.1);
+    --neomorphic-pressed: inset 4px 4px 8px hsl(0 0% 0% / 0.5), inset -4px -4px 8px hsl(var(--background) / 0.1);
+    --neomorphic-card: 8px 8px 16px hsl(0 0% 0% / 0.4), -8px -8px 16px hsl(var(--background) / 0.05);
+    --neomorphic-subtle: 3px 3px 6px hsl(0 0% 0% / 0.3), -3px -3px 6px hsl(var(--background) / 0.05);
 
     --sidebar-background: 240 10% 3.9%;
     --sidebar-foreground: 0 0% 98%;

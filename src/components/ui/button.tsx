@@ -20,6 +20,8 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline transition-all duration-200",
         gradient: "bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-medium hover:shadow-large transition-all duration-300",
         glass: "bg-card/80 backdrop-blur-sm border border-border/50 text-foreground hover:bg-card/90 transition-all duration-200",
+        neomorphic: "neomorphic text-foreground hover:text-primary active:text-primary/80",
+        "neomorphic-primary": "neomorphic bg-gradient-to-br from-primary/5 to-primary/10 text-primary hover:text-primary/90 active:text-primary/80",
       },
       size: {
         default: "h-10 px-4 py-2",

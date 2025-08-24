@@ -54,10 +54,12 @@ export default function AdminDashboard() {
       {/* Admin Statistics Cards */}
       <div ref={statsRef}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+          <Card variant="neomorphic" className="bg-gradient-to-br from-primary/5 to-primary/10">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Usuarios Pendientes</CardTitle>
-              <Users className="h-4 w-4 text-primary" />
+              <div className="neomorphic-subtle rounded-full p-2">
+                <Users className="h-4 w-4 text-primary" />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-primary">{pendingUsers.length}</div>
@@ -67,10 +69,12 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-secondary/10 to-secondary/5 border-secondary/20">
+          <Card variant="neomorphic" className="bg-gradient-to-br from-secondary/5 to-secondary/10">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Usuarios Activos</CardTitle>
-              <Shield className="h-4 w-4 text-secondary" />
+              <div className="neomorphic-subtle rounded-full p-2">
+                <Shield className="h-4 w-4 text-secondary" />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-secondary">{totalActiveUsers}</div>
@@ -80,10 +84,12 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
+          <Card variant="neomorphic" className="bg-gradient-to-br from-accent/5 to-accent/10">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Grupos</CardTitle>
-              <Activity className="h-4 w-4 text-accent" />
+              <div className="neomorphic-subtle rounded-full p-2">
+                <Activity className="h-4 w-4 text-accent" />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-accent">{totalGroups}</div>
@@ -93,10 +99,12 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-destructive/10 to-destructive/5 border-destructive/20">
+          <Card variant="neomorphic" className="bg-gradient-to-br from-destructive/5 to-destructive/10">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Tareas</CardTitle>
-              <Settings className="h-4 w-4 text-destructive" />
+              <div className="neomorphic-subtle rounded-full p-2">
+                <Settings className="h-4 w-4 text-destructive" />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-destructive">{totalTasks}</div>
@@ -111,10 +119,12 @@ export default function AdminDashboard() {
       {/* Admin Specific Sections */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Pending Approvals */}
-        <Card>
+        <Card variant="neomorphic">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
+              <div className="neomorphic-subtle rounded-full p-2">
+                <Users className="h-5 w-5 text-primary" />
+              </div>
               Usuarios Pendientes de Aprobación
             </CardTitle>
           </CardHeader>
@@ -122,7 +132,7 @@ export default function AdminDashboard() {
             {pendingUsers.length > 0 ? (
               <div className="space-y-3">
                 {pendingUsers.slice(0, 5).map((user) => (
-                  <div key={user.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                  <div key={user.id} className="neomorphic-subtle p-3 rounded-lg">
                     <div>
                       <p className="font-medium">{user.name}</p>
                       <p className="text-sm text-muted-foreground">{user.email}</p>
@@ -145,10 +155,12 @@ export default function AdminDashboard() {
         </Card>
 
         {/* System Overview */}
-        <Card>
+        <Card variant="neomorphic">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
+              <div className="neomorphic-subtle rounded-full p-2">
+                <Activity className="h-5 w-5 text-primary" />
+              </div>
               Resumen del Sistema
             </CardTitle>
           </CardHeader>

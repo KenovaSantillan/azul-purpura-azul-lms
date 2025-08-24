@@ -57,18 +57,24 @@ const Index = () => {
         <AppSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
         <main className="flex-1 flex flex-col">
           {/* Header */}
-          <header className="border-b bg-card/80 backdrop-blur-sm p-4 flex items-center justify-between shadow-soft sticky top-0 z-50">
+          <header className="neomorphic-subtle backdrop-blur-sm p-4 flex items-center justify-between sticky top-0 z-50 mx-2 mt-2 rounded-xl">
             <div className="flex items-center gap-4">
-              <SidebarTrigger className="md:hidden h-9 w-9 bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-soft transition-all duration-200" />
-              <SidebarTrigger className="hidden md:block hover:bg-accent/50 transition-all duration-200" />
+              <SidebarTrigger className="md:hidden h-9 w-9" />
+              <Button 
+                variant="neomorphic" 
+                size="icon" 
+                className="hidden md:flex"
+                asChild
+              >
+                <SidebarTrigger />
+              </Button>
               <div className="flex items-center gap-3">
-                <div className="relative">
+                <div className="relative neomorphic-subtle rounded-lg p-2">
                   <img 
                     src="/lovable-uploads/c25f0b68-5713-4917-bcfb-9b936b589f47.png" 
                     alt="Portal Kenova" 
-                    className="h-10 w-auto object-contain hover:scale-105 transition-transform duration-200"
+                    className="h-8 w-auto object-contain hover:scale-105 transition-transform duration-200"
                   />
-                  <div className="absolute inset-0 bg-primary/10 rounded blur animate-pulse-soft opacity-50"></div>
                 </div>
                 <div className="hidden sm:block">
                   <p className="text-sm font-medium text-foreground">Portal Kenova</p>
@@ -78,10 +84,10 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-3">
               <Button 
-                variant="glass" 
+                variant="neomorphic-primary" 
                 size="icon" 
                 onClick={() => alert('Asistente de IA próximamente')}
-                className="group hover:animate-glow relative"
+                className="group relative"
               >
                 <Brain className="h-5 w-5 group-hover:animate-bounce-gentle" />
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full animate-pulse-soft"></span>

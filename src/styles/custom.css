@@ -34,6 +34,32 @@
   @apply animate-bounce-gentle hover:animate-glow transition-all duration-300;
 }
 
+/* Efectos neumórficos */
+.neomorphic {
+  box-shadow: var(--neomorphic-light);
+  @apply bg-background border-0 transition-all duration-300;
+}
+
+.neomorphic:hover {
+  @apply scale-[1.02];
+}
+
+.neomorphic:active,
+.neomorphic.pressed {
+  box-shadow: var(--neomorphic-pressed);
+  @apply scale-[0.98];
+}
+
+.neomorphic-card {
+  box-shadow: var(--neomorphic-card);
+  @apply bg-background border-0 transition-all duration-300 hover:scale-[1.01];
+}
+
+.neomorphic-subtle {
+  box-shadow: var(--neomorphic-subtle);
+  @apply bg-background border-0 transition-all duration-200;
+}
+
 /* Smooth scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
